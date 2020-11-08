@@ -67,7 +67,7 @@ function main() {
             --)
                 break
             ;;
-            add|dns|install|remove|run|user)
+            add|dns|install|list|remove|run|tls|user)
                 command=${parameter}
                 if ! test -f "${script_base_dir}/command/${command}.sh"; then
                     error "Command <${command}> not found"
