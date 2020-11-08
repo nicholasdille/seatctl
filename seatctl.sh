@@ -21,8 +21,38 @@ source "${script_base_dir}/lib/requirements.sh"
 
 process_requirements "${script_base_dir}/requirements.yaml"
 
+function run_on_seat() {
+    if test -z "${name}"; then
+        error "Name of virtual machine must be supplied"
+        exit 1
+    fi
+    if test -z "${index}"; then
+        error "Index of virtual machine must be supplied"
+        exit 1
+    fi
+
+    ip=$(jq --raw-output '.ip' set/${name}/seat-${name}-${index}.json)
+    ssh -i "${script_base_dir}/set/${name}/ssh" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "root@${ip}" "$@"
+}
+
+function run_on_set() {
+    if test -z "${name}"; then
+        error "Name of virtual machine must be supplied"
+        exit 1
+    fi
+    if test -z "${vm_list}"; then
+        error "Name of virtual machine must be supplied"
+        exit 1
+    fi
+
+    # shellcheck disable=SC2154
+    for index in ${vm_list}; do
+        run_on_seat "${name}" "${index}"
+    done
+}
+
 function main() {
-    vm_start_index=1    
+    vm_start_index=1
 
     while test "$#" -gt 0; do
         local parameter
