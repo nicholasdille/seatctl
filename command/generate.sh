@@ -29,12 +29,13 @@ function generate_main() {
         exit 1
     fi
 
+    echo "hostname;username;password"
     # shellcheck disable=SC2154
     for index in ${vm_list}; do
         local password
         password=$(openssl rand -hex 32)
 
-        echo "seat${index};seat${index}.${zone};${password}"
+        echo "seat${index}.${zone};seat${index};${password}"
     done
 
     exit 0
