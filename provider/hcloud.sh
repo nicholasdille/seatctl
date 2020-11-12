@@ -6,6 +6,8 @@ else
     error "Provider hcloud requires either environment variable HCLOUD_CONTEXT or HCLOUD_TOKEN"
     exit 1
 fi
+export HCLOUD_CONTEXT
+export HCLOUD_TOKEN
 
 # shellcheck disable=SC2154
 HCLOUD="${script_base_dir}/bin/hcloud"
@@ -52,7 +54,7 @@ function create_virtual_machine() {
         exit 1
     fi
 
-    if test "$(hcloud ssh-key list --selector owner=seatctl,seat-set=foo --output noheader | wc -l)" -eq 0; then
+    if test "$(hcloud ssh-key list --selector owner=seatctl,seat-set=${name} --output noheader | wc -l)" -eq 0; then
         hcloud ssh-key create \
             --name "seat-${name}" \
             --public-key-from-file "${ssh_key}" \

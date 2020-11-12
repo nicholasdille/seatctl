@@ -30,8 +30,8 @@ function run_main() {
     fi
 
     # shellcheck disable=SC2154
-    for vm_index in ${vm_list}; do
-        info "Running on seat-${name}-${vm_index}"
+    for index in ${vm_list}; do
+        info "Running on seat-${name}-${index}"
         ip=$(jq --raw-output '.ip' set/${name}/seat-${name}-${index}.json)
         ssh -i "${script_base_dir}/set/${name}/ssh" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "root@${ip}" "${command[@]}"
     done

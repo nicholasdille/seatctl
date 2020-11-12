@@ -1,62 +1,72 @@
 #!/bin/bash
 
-function user_add() {
+function user_main() {
+    local command
+    local prefix=seat
+    local password_file
+
     while test "$#" -gt 0; do
         local parameter=$1
         shift
 
         case "${parameter}" in
-            add)
-                user_add "$@"
-                exit 0
+            --command)
+                command=$1
             ;;
-            reset)
-                user_reset "$@"
-                exit 0
+            --prefix)
+                prefix=$1
             ;;
-            --)
-                break
+            --password-file)
+                password_file=$1
             ;;
             *)
-                error "Unknown parameter <${parameter}> for command"
+                echo "ERROR: Wrong parameters"
+                exit 1
             ;;
         esac
 
         shift
     done
 
-    run_on_set hostname
+    if test -z "${command}"; then
+        echo "ERROR: Command not specified"
+        exit 1
+    fi
 
-    exit 0
-}
+    # shellcheck disable=SC2154
+    for index in ${vm_list}; do
+        info "Running on seat-${name}-${index}"
 
-function user_reset() {
-    echo reset
-}
+        ip=$(jq --raw-output '.ip' set/${name}/seat-${name}-${index}.json)
 
-function user_main() {
-    while test "$#" -gt 0; do
-        local parameter=$1
-        shift
-
-        case "${parameter}" in
+        case "${command}" in
             add)
-                user_add "$@"
-                exit 0
+                run_on_seat "${name}" "${index}" useradd --create-home --shell /bin/bash "${prefix}${index}"
+            ;;
+            remove)
+                run_on_seat "${name}" "${index}" userdel "${prefix}${index}"
+            ;;
+            lock)
+                run_on_seat "${name}" "${index}" usermod --lock "${prefix}${index}"
+            ;;
+            unlock)
+                run_on_seat "${name}" "${index}" usermod --unlock "${prefix}${index}"
             ;;
             reset)
-                user_reset "$@"
-                exit 0
-            ;;
-            --)
-                break
-            ;;
-            *)
-                error "Unknown parameter <${parameter}> for command"
+                if test -z "${password_file}"; then
+                    echo "ERROR: Password file must be specified"
+                    exit 1
+                fi
+                if ! test -f "${password_file}"; then
+                    echo "ERROR: Password file does not exist"
+                    exit 1
+                fi
+
+                local password
+                password=$(cat "${password_file}" | cut -d';' -f3 | head -n "${index}")
+                run_on_seat "${name}" "${index}" "echo ${prefix}${index}:${password} | chpasswd"
             ;;
         esac
-
-        shift
     done
 
     exit 0

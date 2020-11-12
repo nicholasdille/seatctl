@@ -22,14 +22,19 @@ source "${script_base_dir}/lib/requirements.sh"
 process_requirements "${script_base_dir}/requirements.yaml"
 
 function run_on_seat() {
+    local name=$1
     if test -z "${name}"; then
         error "Name of virtual machine must be supplied"
         exit 1
     fi
+    shift
+
+    local index=$1
     if test -z "${index}"; then
         error "Index of virtual machine must be supplied"
         exit 1
     fi
+    shift
 
     ip=$(jq --raw-output '.ip' set/${name}/seat-${name}-${index}.json)
     ssh -i "${script_base_dir}/set/${name}/ssh" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "root@${ip}" "$@"
@@ -47,7 +52,7 @@ function run_on_set() {
 
     # shellcheck disable=SC2154
     for index in ${vm_list}; do
-        run_on_seat "${name}" "${index}"
+        run_on_seat "${name}" "${index}" "$@"
     done
 }
 
@@ -97,7 +102,7 @@ function main() {
             --)
                 break
             ;;
-            add|dns|install|list|remove|run|tls|user)
+            add|dns|generate|install|list|remove|run|tls|ssh|user)
                 command=${parameter}
                 if ! test -f "${script_base_dir}/command/${command}.sh"; then
                     error "Command <${command}> not found"
@@ -135,7 +140,7 @@ function main() {
     info "vm_start_index=${vm_start_index}"
     info "vm_count=${vm_count}"
     # shellcheck disable=SC2116
-    info "vm_list=$(echo "${vm_list}")"
+    info "vm_list=$(echo "${vm_list}" | tr '\n' ' ')"
 
     # shellcheck disable=SC1090
     source "${script_base_dir}/command/${command}.sh"
