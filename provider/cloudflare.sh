@@ -24,7 +24,8 @@ function exists_dns_record() {
         exit 1
     fi
 
-    if test "$(flarectl dns list --zone "${zone}" --name "${name}.${zone}" --type "${type}" | wc -l)" -eq 2; then
+    >&2 echo "VERBOSE: Checking for DNS record ${name}.${zone} of type ${type}."
+    if test "$(flarectl dns list --zone "${zone}" --name "${name}.${zone}" | wc -l)" -eq 2; then
         return 1
     else
         return 0
@@ -67,15 +68,10 @@ function remove_dns_record() {
         echo "ERROR: Name must be specified"
         exit 1
     fi
-    local type=$3
-    if test -z "${type}"; then
-        echo "ERROR: Type must be specified"
-        exit 1
-    fi
 
     local id
     id=$(
-        flarectl --json dns list --zone "${zone}" --name "${name}.${zone}" --type "${type}" | \
+        flarectl --json dns list --zone "${zone}" --name "${name}.${zone}" | \
             jq --raw-output '.[].ID'
     )
     if test -z "${id}"; then
@@ -84,4 +80,20 @@ function remove_dns_record() {
     fi
 
     flarectl dns delete --zone "${zone}" --id "${id}"
+}
+
+function get_dns_record() {
+    local zone=$1
+    if test -z "${zone}"; then
+        echo "ERROR: Zone must be specified"
+        exit 1
+    fi
+    local name=$2
+    if test -z "${name}"; then
+        echo "ERROR: Name must be specified"
+        exit 1
+    fi
+
+    flarectl --json dns list --zone "${zone}" | \
+        jq --raw-output --arg name "${name}.${zone}" '.[] | select(.Name == $name) | "\(.Name) \(.Type) \(.Content)"'
 }

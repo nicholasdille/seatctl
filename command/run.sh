@@ -33,7 +33,7 @@ function run_main() {
     for index in ${vm_list}; do
         info "Running on seat-${name}-${index}"
         ip=$(jq --raw-output '.ip' set/${name}/seat-${name}-${index}.json)
-        ssh -i "${script_base_dir}/set/${name}/ssh" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "root@${ip}" "${command[@]}"
+        ssh -i "${script_base_dir}/set/${name}/ssh" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "root@${ip}" -- "${command[@]}"
     done
 
     exit 0

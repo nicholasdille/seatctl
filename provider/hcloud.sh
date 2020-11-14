@@ -25,7 +25,7 @@ function exists_virtual_machine() {
         exit 1
     fi
 
-    if test "$(hcloud server list --selector owner=seatctl,seat-set="${name}",seat-index="${index}" --output noheader | wc -l)" -gt 0; then
+    if test "$(hcloud server list --selector seatctl-set="${name}",seatctl-index="${index}" --output noheader | wc -l)" -gt 0; then
         return 0
     fi
 
@@ -54,12 +54,21 @@ function create_virtual_machine() {
         exit 1
     fi
 
-    if test "$(hcloud ssh-key list --selector owner=seatctl,seat-set=${name} --output noheader | wc -l)" -eq 0; then
+    if test "$(hcloud ssh-key list --selector seatctl-set="${name}" --output noheader | wc -l)" -eq 0; then
         hcloud ssh-key create \
-            --name "seat-${name}" \
-            --public-key-from-file "${ssh_key}" \
-            --label owner=seatctl \
-            --label seat-set="${name}"
+            --name "seatctl-set-${name}" \
+            --public-key-from-file "${ssh_key}"
+        hcloud ssh-key add-label "seatctl-set-${name}" \
+            seatctl-set="${name}"
+    fi
+
+    local hcloud_ssh_fingerprint
+    hcloud_ssh_fingerprint=$(hcloud ssh-key list --selector seatctl-set="${name}" --output columns=fingerprint | tail -n 1)
+    local local_ssh_fingerprint
+    local_ssh_fingerprint=$(ssh-keygen -l -E md5 -f set/${name}/ssh | cut -d' ' -f2 | cut -d':' -f2-)
+    if test "${hcloud_ssh_fingerprint}" != "${local_ssh_fingerprint}"; then
+        echo "ERROR: SSH key fingerprints do not match"
+        exit 1
     fi
 
     if ! exists_virtual_machine "${name}" "${index}"; then
@@ -68,13 +77,12 @@ function create_virtual_machine() {
             --location fsn1 \
             --type cx21 \
             --image ubuntu-20.04 \
-            --ssh-key "seat-${name}" \
-            --label owner=seatctl \
-            --label seat-set="${name}" \
-            --label seat-index="${index}"
-    
+            --ssh-key "seatctl-set-${name}" \
+            --label seatctl-set="${name}" \
+            --label seatctl-index="${index}"
+
     else
-        info "Virtual machine with index ${index} in set ${name} already exists"
+        >&2 echo "VERBOSE: Virtual machine with index ${index} in set ${name} already exists"
     fi
 }
 
@@ -92,7 +100,8 @@ function get_virtual_machine_ip() {
     fi
 
     if exists_virtual_machine "${name}" "${index}"; then
-        hcloud server list --selector owner=seatctl,seat-set="${name}",seat-index="${index}" --output columns=ipv4 | tail -n +2
+        >&2 echo "VERBOSE: Fetching IP address for index ${index} in set ${name}..."
+        hcloud server list --selector seatctl-set="${name}",seatctl-index="${index}" --output columns=ipv4 | tail -n +2
     fi
 }
 

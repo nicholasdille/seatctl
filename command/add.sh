@@ -33,7 +33,7 @@ function add_main() {
                 }' \
                 >"${script_base_dir}/set/${name}/seat-${name}-${index}.json"
         else
-            warning "Got no IP address for seat ${index} in set ${name}"
+            echo "WARNING: Got no IP address for seat ${index} in set ${name}"
         fi
     done
 

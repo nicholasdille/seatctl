@@ -6,8 +6,10 @@ function remove_main() {
     fi
 
     # shellcheck disable=SC2154
-    for vm_index in ${vm_list}; do
-        remove_virtual_machine "${name}" "${vm_index}"
+    for index in ${vm_list}; do
+        echo "INFO: Removing virtual machine..."
+        remove_virtual_machine "${name}" "${index}"
+        echo "VERBOSE: Removing seat info..."
         rm -f "${script_base_dir}/set/${name}/seat-${name}-${index}.json"
     done
 
