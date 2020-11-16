@@ -1,9 +1,24 @@
 #!/bin/bash
 
 function add_main() {
-    if test "$#" -gt 0; then
-        error "Command add does not accept any parameters"
-    fi
+    while test "$#" -gt 0; do
+        local parameter=$1
+        shift
+
+        case "${parameter}" in
+            --help)
+                add_help
+                exit 0
+            ;;
+            *)
+                echo "ERROR: Wrong parameter ${parameter}."
+                add_help
+                exit 1
+            ;;
+        esac
+
+        shift
+    done
 
     # shellcheck disable=SC2154
     mkdir -p "${script_base_dir}/set/${name}"
@@ -20,7 +35,8 @@ function add_main() {
         local ip
         ip=$(get_virtual_machine_ip "${name}" "${index}")
         if test -n "${ip}"; then
-            info "Set ${name}, seat ${index}, ip ${ip}."
+            echo "INFO: Set ${name}, seat ${index}, ip ${ip}."
+
             jq \
                 --null-input \
                 --arg name "${name}" \
@@ -38,6 +54,17 @@ function add_main() {
     done
 
     exit 0
+}
+
+add_help() {
+    cat <<EOF
+seatctl <global options> add <command options>
+
+Adds a new virtual machine. Requires virtual machine provider.
+
+Command options:
+  --help    XXX
+EOF
 }
 
 add_main "$@"

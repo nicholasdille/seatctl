@@ -1,9 +1,22 @@
 #!/bin/bash
 
 function remove_main() {
-    if test "$#" -gt 0; then
-        error "Command add does not accept any parameters"
-    fi
+    while test "$#" -gt 0; do
+        local parameter=$1
+        shift
+
+        case "${parameter}" in
+            --help)
+                remove_help
+                exit 0
+            ;;
+            *)
+                echo "ERROR: Wrong parameter ${parameter}."
+                remove_help
+                exit 1
+            ;;
+        esac
+    done
 
     # shellcheck disable=SC2154
     for index in ${vm_list}; do
@@ -14,6 +27,17 @@ function remove_main() {
     done
 
     exit 0
+}
+
+remove_help() {
+    cat <<EOF
+seatctl <global options> remove
+
+Removes a virtual machine. Requires virtual machine provider.
+
+Command options:
+  --help    XXX
+EOF
 }
 
 remove_main "$@"

@@ -15,8 +15,13 @@ function dns_main() {
             --zone)
                 zone=$1
             ;;
+            --help)
+                dns_help
+                exit 0
+            ;;
             *)
                 echo "ERROR: Wrong parameters"
+                dns_help
                 exit 1
             ;;
         esac
@@ -28,10 +33,12 @@ function dns_main() {
 
     if test -z "${command}"; then
         echo "ERROR: Command not specified"
+        dns_help
         exit 1
     fi
     if test -z "${zone}"; then
         echo "ERROR: DNS zone not specified"
+        dns_help
         exit 1
     fi
 
@@ -82,6 +89,23 @@ function dns_main() {
     done
 
     exit 0
+}
+
+dns_help() {
+    cat <<EOF
+seatctl <global options> dns <command options>
+
+Adds DNS records. Required DNS provider.
+
+Command options:
+  --zone       XXX (required)
+  --command    XXX (required)
+  --help       XXX
+
+Sub-commands:
+  add       XXX
+  remove    XXX
+EOF
 }
 
 dns_main "$@"

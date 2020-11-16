@@ -2,8 +2,6 @@
 
 function user_main() {
     local command
-    local prefix=seat
-    local password_file
 
     while test "$#" -gt 0; do
         local parameter=$1
@@ -13,14 +11,13 @@ function user_main() {
             --command)
                 command=$1
             ;;
-            --prefix)
-                prefix=$1
-            ;;
-            --password-file)
-                password_file=$1
+            --help)
+                user_help
+                exit 0
             ;;
             *)
                 echo "ERROR: Wrong parameters"
+                user_help
                 exit 1
             ;;
         esac
@@ -37,39 +34,47 @@ function user_main() {
     for index in ${vm_list}; do
         info "Running on seat-${name}-${index}"
 
-        ip=$(jq --raw-output '.ip' set/${name}/seat-${name}-${index}.json)
-
         case "${command}" in
             add)
-                run_on_seat "${name}" "${index}" useradd --create-home --shell /bin/bash "${prefix}${index}"
+                run_on_seat "${name}" "${index}" useradd --create-home --shell /bin/bash "seat${index}"
             ;;
             remove)
-                run_on_seat "${name}" "${index}" userdel "${prefix}${index}"
+                run_on_seat "${name}" "${index}" userdel "seat${index}"
             ;;
             lock)
-                run_on_seat "${name}" "${index}" usermod --lock "${prefix}${index}"
+                run_on_seat "${name}" "${index}" usermod --lock "seat${index}"
             ;;
             unlock)
-                run_on_seat "${name}" "${index}" usermod --unlock "${prefix}${index}"
+                run_on_seat "${name}" "${index}" usermod --unlock "seat${index}"
             ;;
             reset)
-                if test -z "${password_file}"; then
-                    echo "ERROR: Password file must be specified"
-                    exit 1
-                fi
-                if ! test -f "${password_file}"; then
-                    echo "ERROR: Password file does not exist"
-                    exit 1
-                fi
-
                 local password
-                password=$(cat "${password_file}" | cut -d';' -f3 | head -n "${index}")
-                run_on_seat "${name}" "${index}" "echo ${prefix}${index}:${password} | chpasswd"
+                password=$(cat "set/${name}/passwords.csv" | grep -v "hostname;username;password" | head -n "${index}" | cut -d';' -f3)
+                run_on_seat "${name}" "${index}" "echo seat${index}:${password} | chpasswd"
             ;;
         esac
     done
 
     exit 0
+}
+
+user_help() {
+    cat <<EOF
+seatctl <global options> user <command options>
+
+Sets sudo without password.
+
+Command options:
+  --command    XXX (required)
+  --help       XXX
+
+Sub-commands:
+  add       XXX
+  remove    XXX
+  lock      XXX
+  unlock    XXX
+  reset     XXX
+EOF
 }
 
 user_main "$@"

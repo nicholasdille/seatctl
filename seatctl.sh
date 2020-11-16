@@ -1,6 +1,7 @@
 #!/bin/bash
 set -o errexit
 
+version=main
 script_base_dir="$(
     dirname "$(
         readlink -f "$0"
@@ -77,32 +78,36 @@ function main() {
                     error "Provider <${provider}> does not exist"
                 fi
             ;;
-            --start-index|--start|-s)
+            --start|-s)
                 vm_start_index=$1
                 if test -n "${vm_list}"; then
-                    error "Parameter --start-index and/or --count cannot be used with --list"
+                    error "Parameter --start and/or --count cannot be used with --list"
                 fi
             ;;
             --count|-c)
                 vm_count=$1
                 if test -n "${vm_list}"; then
-                    error "Parameter --start-index and/or --count cannot be used with --list"
+                    error "Parameter --start and/or --count cannot be used with --list"
                 fi
             ;;
             --list|-l)
                 vm_list=$1
                 if test -n "${vm_start_index}" || test -n "${vm_count}"; then
-                    error "Parameter --list cannot be used with --start-index and/or --count"
+                    error "Parameter --list cannot be used with --start and/or --count"
                 fi
             ;;
-            --help|-h)
+            --help)
                 show_help
+                exit 0
+            ;;
+            --version)
+                echo "seatctl version ${version}"
                 exit 0
             ;;
             --)
                 break
             ;;
-            add|dns|generate|install|list|remove|run|tls|ssh|user)
+            add|dns|file|generate|install|list|remove|run|tls|ssh|sudo|user)
                 command=${parameter}
                 if ! test -f "${script_base_dir}/command/${command}.sh"; then
                     error "Command <${command}> not found"
@@ -149,7 +154,32 @@ function main() {
 }
 
 function show_help() {
-    echo HELP
+    cat <<EOF
+seatctl [global options] <command> [command options]
+
+Global options:
+  --name, -n        XXX (required)
+  --provider, -p    XXX (required for some commands)
+  --start, -s       XXX
+  --count, -c       XXX (required instead of --list)
+  --list, -l        XXX (required instead of --count)
+  --help            XXX
+  --version         XXX
+
+Commands:
+  add         XXX
+  dns         XXX
+  file        XXX
+  generate    XXX
+  install     XXX
+  list        XXX
+  remove      XXX
+  run         XXX
+  tls         XXX
+  ssh         XXX
+  sudo        XXX
+  user        XXX
+EOF
 }
 
 main "$@"

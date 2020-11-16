@@ -6,11 +6,17 @@ function run_main() {
         shift
 
         case "${parameter}" in
+            --help)
+                run_help
+                exit 0
+            ;;
             --)
                 break
             ;;
             *)
-                error "Unknown parameter <${parameter}> for command"
+                echo "ERROR: Unknown parameter <${parameter}> for command"
+                run_help
+                exit 1
             ;;
         esac
 
@@ -19,24 +25,35 @@ function run_main() {
     command=("$@")
 
     if test "${#command[@]}" -eq 0; then
-        error "Command must be specified"
+        echo "ERROR: Command must be specified"
         exit 1
     fi
 
     # shellcheck disable=SC2154
     if ! test -f "${script_base_dir}/set/${name}/ssh"; then
-        error "Missing SSH key"
+        echo "ERROR: Missing SSH key"
         exit 1
     fi
 
     # shellcheck disable=SC2154
     for index in ${vm_list}; do
-        info "Running on seat-${name}-${index}"
+        echo "INFO: Running on seat-${name}-${index}"
         ip=$(jq --raw-output '.ip' set/${name}/seat-${name}-${index}.json)
         ssh -i "${script_base_dir}/set/${name}/ssh" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "root@${ip}" -- "${command[@]}"
     done
 
     exit 0
+}
+
+run_help() {
+    cat <<EOF
+seatctl <global options> run -- <command>
+
+Executes a command remotely.
+
+Command options:
+  --help      XXX
+EOF
 }
 
 run_main "$@"

@@ -15,8 +15,13 @@ function generate_main() {
             --length)
                 length=$1
             ;;
+            --help)
+                generate_help
+                exit 0
+            ;;
             *)
                 echo "ERROR: Wrong parameters"
+                generate_help
                 exit 1
             ;;
         esac
@@ -26,6 +31,7 @@ function generate_main() {
     
     if test -z "${zone}"; then
         echo "ERROR: DNS zone not specified"
+        generate_help
         exit 1
     fi
 
@@ -33,12 +39,26 @@ function generate_main() {
     # shellcheck disable=SC2154
     for index in ${vm_list}; do
         local password
-        password=$(openssl rand -hex 32)
+        password=$(openssl rand -hex "${length}")
 
         echo "seat${index}.${zone};seat${index};${password}"
     done
 
     exit 0
+}
+
+generate_help() {
+    cat <<EOF
+seatctl <global options> generate <command options>
+seatctl <global options> generate <command options>
+
+Generates passwords.
+
+Command options:
+  --zone      XXX (required)
+  --length    XXX (optional, defaults to 32)
+  --help      XXX
+EOF
 }
 
 generate_main "$@"
