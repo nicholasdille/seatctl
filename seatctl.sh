@@ -135,6 +135,10 @@ function main() {
     info "command=${command}"
 
     if test -z "${vm_list}"; then
+        if test -z "${vm_count}"; then
+            error "You must specify either --list or --count."
+            exit 1
+        fi
         vm_list=$(
             seq \
                 "${vm_start_index}" \
