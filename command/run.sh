@@ -1,6 +1,8 @@
 #!/bin/bash
 
 function run_main() {
+    local parallel=false
+
     while test "$#" -gt 0; do
         local parameter=$1
         shift
@@ -9,6 +11,9 @@ function run_main() {
             --help)
                 run_help
                 exit 0
+            ;;
+            --parallel)
+                parallel=true
             ;;
             --)
                 break
@@ -20,7 +25,6 @@ function run_main() {
             ;;
         esac
 
-        shift
     done
     command=("$@")
 
@@ -33,6 +37,10 @@ function run_main() {
     if ! test -f "${script_base_dir}/set/${name}/ssh"; then
         echo "ERROR: Missing SSH key"
         exit 1
+    fi
+
+    if ${parallel}; then
+        echo "PARALLEL=${parallel}"
     fi
 
     # shellcheck disable=SC2154
