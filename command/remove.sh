@@ -11,7 +11,7 @@ function remove_main() {
                 exit 0
             ;;
             *)
-                echo "ERROR: Wrong parameter ${parameter}."
+                error "Wrong parameter ${parameter}."
                 remove_help
                 exit 1
             ;;
@@ -20,9 +20,9 @@ function remove_main() {
 
     # shellcheck disable=SC2154
     for index in ${vm_list}; do
-        echo "INFO: Removing virtual machine..."
+        info "Removing virtual machine..."
         remove_virtual_machine "${name}" "${index}"
-        echo "VERBOSE: Removing seat info..."
+        verbose "Removing seat info..."
         rm -f "${script_base_dir}/set/${name}/seat-${name}-${index}.json"
     done
 

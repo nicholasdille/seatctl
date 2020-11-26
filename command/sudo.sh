@@ -11,7 +11,7 @@ sudo_main() {
                 exit 0
             ;;
             *)
-                echo "ERROR: Wrong parameter ${parameter}."
+                error "Wrong parameter ${parameter}."
                 sudo_help
                 exit 1
             ;;
@@ -25,7 +25,7 @@ sudo_main() {
 
         ip=$(jq --raw-output '.ip' set/${name}/seat-${name}-${index}.json)
 
-        echo "seat${index} ALL=(ALL) NOPASSWD:ALL" | ssh -i "${script_base_dir}/set/${name}/ssh" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "root@${ip}" "cat >/etc/sudoers.d/seat${index}"
+        echo "seat${index} ALL=(ALL) NOPASSWD:ALL" | ssh -i "${script_base_dir}/set/${name}/ssh" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR "root@${ip}" "cat >/etc/sudoers.d/seat${index}"
     done
 }
 

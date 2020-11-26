@@ -16,7 +16,7 @@ function user_main() {
                 exit 0
             ;;
             *)
-                echo "ERROR: Wrong parameters"
+                error "Wrong parameters"
                 user_help
                 exit 1
             ;;
@@ -26,7 +26,7 @@ function user_main() {
     done
 
     if test -z "${command}"; then
-        echo "ERROR: Command not specified"
+        error "Command not specified"
         exit 1
     fi
 

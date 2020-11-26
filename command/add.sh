@@ -11,7 +11,7 @@ function add_main() {
                 exit 0
             ;;
             *)
-                echo "ERROR: Wrong parameter ${parameter}."
+                error "Wrong parameter ${parameter}."
                 add_help
                 exit 1
             ;;
@@ -35,7 +35,7 @@ function add_main() {
         local ip
         ip=$(get_virtual_machine_ip "${name}" "${index}")
         if test -n "${ip}"; then
-            echo "INFO: Set ${name}, seat ${index}, ip ${ip}."
+            info "Set ${name}, seat ${index}, ip ${ip}."
 
             jq \
                 --null-input \
@@ -49,7 +49,7 @@ function add_main() {
                 }' \
                 >"${script_base_dir}/set/${name}/seat-${name}-${index}.json"
         else
-            echo "WARNING: Got no IP address for seat ${index} in set ${name}"
+            warning "Got no IP address for seat ${index} in set ${name}"
         fi
     done
 

@@ -11,7 +11,7 @@ list_main() {
                 exit 0
             ;;
             *)
-                echo "ERROR: Wrong parameter ${parameter}."
+                error "Wrong parameter ${parameter}."
                 list_help
                 exit 1
             ;;
@@ -25,16 +25,27 @@ list_main() {
 
         # shellcheck disable=SC2154
         for index in ${vm_list}; do
+            >&2 echo -e -n "\rChecking seat ${index}"
+
             echo -n "${name} ${index}"
             if exists_virtual_machine "${name}" "${index}"; then
                 echo -n " yes"
             else
                 echo -n " no"
             fi
-            echo -n " TODO"
+
+            ip=$(jq --raw-output '.ip' set/${name}/seat-${name}-${index}.json)
+            if ssh -i set/${name}/ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR root@${ip} true; then
+                echo " yes"
+            else
+                echo " no"
+            fi
             echo
         done
+        >&2 echo -e -n "\r"
     ) | column -t
+
+    exit 0
 }
 
 list_help() {
@@ -48,4 +59,4 @@ Command options:
 EOF
 }
 
-exit 0
+list_main "$@"

@@ -16,7 +16,7 @@ function ssh_main() {
                 exit 0
             ;;
             *)
-                echo "ERROR: Wrong parameter ${parameter}."
+                error "Wrong parameter ${parameter}."
                 ssh_help
                 exit 1
             ;;
@@ -28,7 +28,7 @@ function ssh_main() {
     if test "${type}" == "user"; then
         for index in ${vm_list}; do
             ip=$(jq --raw-output '.ip' set/${name}/seat-${name}-${index}.json)
-            ssh -i "${script_base_dir}/set/${name}/ssh" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "seat${index}@${ip}"
+            ssh -i "${script_base_dir}/set/${name}/ssh" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR "seat${index}@${ip}"
         done
 
     else

@@ -19,14 +19,14 @@ function run_install() {
     done
 
     if test "${#packages[@]}" -eq 0; then
-        echo "ERROR: Package(s) must be specified"
+        error "Package(s) must be specified"
         install_help
         exit 1
     fi
 
     # shellcheck disable=SC2154
     if ! test -f "${script_base_dir}/set/${name}/ssh"; then
-        echo "ERROR: Missing SSH key"
+        error "Missing SSH key"
         install_help
         exit 1
     fi

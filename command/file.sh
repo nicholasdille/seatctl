@@ -24,7 +24,7 @@ function file_main() {
                 exit 0
             ;;
             *)
-                echo "ERROR: Wrong parameter $1."
+                error "Wrong parameter $1."
                 file_help
                 exit 1
             ;;
@@ -34,17 +34,17 @@ function file_main() {
     done
 
     if test -z "${command}"; then
-        echo "ERROR: Command not specified"
+        error "Command not specified"
         file_help
         exit 1
     fi
     if test -z "${filepath}"; then
-        echo "ERROR: File not specified"
+        error "File not specified"
         file_help
         exit 1
     fi
     if test -z "${directory}"; then
-        echo "ERROR: Directory not specified"
+        error "Directory not specified"
         file_help
         exit 1
     fi
@@ -57,10 +57,10 @@ function file_main() {
 
         case "${command}" in
             put)
-                scp -i "${script_base_dir}/set/${name}/ssh" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "${filepath}" "root@${ip}:${directory}"
+                scp -i "${script_base_dir}/set/${name}/ssh" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR "${filepath}" "root@${ip}:${directory}"
             ;;
             get)
-                scp -i "${script_base_dir}/set/${name}/ssh" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "root@${ip}:${filepath}" "${directory}"
+                scp -i "${script_base_dir}/set/${name}/ssh" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR "root@${ip}:${filepath}" "${directory}"
             ;;
         esac
     done

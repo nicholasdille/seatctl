@@ -20,7 +20,7 @@ function generate_main() {
                 exit 0
             ;;
             *)
-                echo "ERROR: Wrong parameters"
+                error "Wrong parameters"
                 generate_help
                 exit 1
             ;;
@@ -28,9 +28,9 @@ function generate_main() {
 
         shift
     done
-    
+
     if test -z "${zone}"; then
-        echo "ERROR: DNS zone not specified"
+        error "DNS zone not specified"
         generate_help
         exit 1
     fi

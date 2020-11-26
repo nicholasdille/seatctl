@@ -38,7 +38,7 @@ function run_on_seat() {
     shift
 
     ip=$(jq --raw-output '.ip' set/${name}/seat-${name}-${index}.json)
-    ssh -i "${script_base_dir}/set/${name}/ssh" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "root@${ip}" "$@"
+    ssh -i "${script_base_dir}/set/${name}/ssh" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR "root@${ip}" "$@"
 }
 
 function run_on_set() {

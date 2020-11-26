@@ -20,7 +20,7 @@ function dns_main() {
                 exit 0
             ;;
             *)
-                echo "ERROR: Wrong parameters"
+                error "Wrong parameters"
                 dns_help
                 exit 1
             ;;
@@ -32,12 +32,12 @@ function dns_main() {
     echo "command=${command} zone=${zone}"
 
     if test -z "${command}"; then
-        echo "ERROR: Command not specified"
+        error "Command not specified"
         dns_help
         exit 1
     fi
     if test -z "${zone}"; then
-        echo "ERROR: DNS zone not specified"
+        error "DNS zone not specified"
         dns_help
         exit 1
     fi
@@ -52,30 +52,30 @@ function dns_main() {
         case "${command}" in
             add)
                 if exists_dns_record "${zone}" "seat${index}" A; then
-                    echo "INFO: DNS record for seat${index}.${zone} already exists"
+                    info "DNS record for seat${index}.${zone} already exists"
                 else
-                    echo "INFO: Creating DNS record for seat${index}.${zone}..."
+                    info "Creating DNS record for seat${index}.${zone}..."
                     create_dns_record "${zone}" "seat${index}" A "${ip}"
                 fi
                 if exists_dns_record "${zone}" "*.seat${index}" CNAME; then
-                    echo "INFO: DNS record for *.seat${index}.${zone} already exists"
+                    info "DNS record for *.seat${index}.${zone} already exists"
                 else
-                    echo "INFO: Creating DNS record for *.seat${index}.${zone}..."
+                    info "Creating DNS record for *.seat${index}.${zone}..."
                     create_dns_record "${zone}" "*.seat${index}" CNAME "seat${index}.${zone}"
                 fi
             ;;
             remove)
                 if exists_dns_record "${zone}" "seat${index}" A; then
-                    echo "INFO: Removing DNS record for seat${index}.${zone}..."
+                    info "Removing DNS record for seat${index}.${zone}..."
                     remove_dns_record "${zone}" "seat${index}"
                 else
-                    echo "INFO: DNS record for seat${index}.${zone} does not exist"
+                    info "DNS record for seat${index}.${zone} does not exist"
                 fi
                 if exists_dns_record "${zone}" "*.seat${index}" CNAME; then
-                    echo "INFO: Removing DNS record for *.seat${index}.${zone}..."
+                    info "Removing DNS record for *.seat${index}.${zone}..."
                     remove_dns_record "${zone}" "*.seat${index}"
                 else
-                    echo "INFO: DNS record for *.seat${index}.${zone} does not exist"
+                    info "DNS record for *.seat${index}.${zone} does not exist"
                 fi
             ;;
             show)
