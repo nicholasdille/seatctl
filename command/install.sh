@@ -31,7 +31,7 @@ function run_install() {
         exit 1
     fi
 
-    run_on_set "curl --silent https://pkg.dille.io/pkg.sh | bash -s bootstrap --prefix /usr/local"
+    run_on_set "curl --silent https://pkg.dille.io/pkgctl.sh | bash -s bootstrap --prefix /usr/local"
     for pkg in ${packages[@]}; do
         run_on_set pkg install "${pkg}"
     done

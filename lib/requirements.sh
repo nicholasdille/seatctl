@@ -19,7 +19,7 @@ function process_requirements() {
             if ! type "${script_base_dir}/bin/hcloud" >/dev/null 2>&1; then
                 >&2 echo -n " installing..."
                 # shellcheck disable=SC2154
-                curl --silent https://pkg.dille.io/pkg.sh | \
+                curl --silent https://pkg.dille.io/pkgctl.sh | \
                     TARGET_BASE="${script_base_dir}" bash -s install "${package}"
                 rm -rf "${script_base_dir:?}/etc"
                 >&2 echo " done."
