@@ -2,6 +2,7 @@
 
 function user_main() {
     local command
+    local zone
 
     while test "$#" -gt 0; do
         local parameter=$1
@@ -10,6 +11,9 @@ function user_main() {
         case "${parameter}" in
             --command)
                 command=$1
+            ;;
+            --zone)
+                zone=$1
             ;;
             --help)
                 user_help
@@ -27,6 +31,10 @@ function user_main() {
 
     if test -z "${command}"; then
         error "Command not specified"
+        exit 1
+    fi
+    if test "${command}" == "test" && test -z "${zone}"; then
+        error "Command test requires parameter zone"
         exit 1
     fi
 
@@ -54,8 +62,18 @@ function user_main() {
                     error "No password found"
                     continue
                 fi
-                echo password=${password}
                 run_on_seat "${name}" "${index}" "echo seat${index}:${password} | chpasswd"
+            ;;
+            test)
+                local password
+                password=$(cat "set/${name}/passwords.csv" | grep ";seat${index};" | cut -d';' -f3)
+                if test -z "${password}"; then
+                    error "No password found"
+                    continue
+                fi
+                if ! sshpass -p "${password}" ssh -o StrictHostKeyChecking=no -o LogLevel=Error seat${index}@seat${index}.${zone} true; then
+                    error "Failed to test index ${index}"
+                fi
             ;;
         esac
     done
