@@ -49,7 +49,12 @@ function user_main() {
             ;;
             reset)
                 local password
-                password=$(cat "set/${name}/passwords.csv" | grep -v "hostname;username;password" | head -n "${index}" | cut -d';' -f3)
+                password=$(cat "set/${name}/passwords.csv" | grep ";seat${index};" | cut -d';' -f3)
+                if test -z "${password}"; then
+                    error "No password found"
+                    continue
+                fi
+                echo password=${password}
                 run_on_seat "${name}" "${index}" "echo seat${index}:${password} | chpasswd"
             ;;
         esac

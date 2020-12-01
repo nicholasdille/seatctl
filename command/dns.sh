@@ -3,17 +3,20 @@
 function dns_main() {
     local command
     local zone
+    local force=false
 
     while test "$#" -gt 0; do
-        local parameter=$1
-        shift
-
-        case "${parameter}" in
+        case "$1" in
             --command)
+                shift
                 command=$1
             ;;
             --zone)
+                shift
                 zone=$1
+            ;;
+            --force)
+                force=true
             ;;
             --help)
                 dns_help
@@ -51,7 +54,7 @@ function dns_main() {
 
         case "${command}" in
             add)
-                if exists_dns_record "${zone}" "seat${index}" A; then
+                if ! ${force} && exists_dns_record "${zone}" "seat${index}" A; then
                     info "DNS record for seat${index}.${zone} already exists"
                 else
                     info "Creating DNS record for seat${index}.${zone}..."
