@@ -27,6 +27,8 @@ sudo_main() {
 
         echo "seat${index} ALL=(ALL) NOPASSWD:ALL" | ssh -i "${script_base_dir}/set/${name}/ssh" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR "root@${ip}" "cat >/etc/sudoers.d/seat${index}"
     done
+
+    exit 0
 }
 
 sudo_help() {
@@ -40,4 +42,4 @@ Command options:
 EOF
 }
 
-exit 0
+sudo_main
