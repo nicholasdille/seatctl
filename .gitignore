@@ -1,3 +1,4 @@
 .env
 bin
 set
+passwords.csv
