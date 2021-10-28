@@ -175,7 +175,6 @@ Commands:
   dns         XXX
   file        XXX
   generate    XXX
-  install     XXX
   list        XXX
   remove      XXX
   run         XXX
