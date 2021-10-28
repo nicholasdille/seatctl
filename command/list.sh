@@ -36,11 +36,13 @@ list_main() {
                 echo -n " no"
             fi
 
-            ip=$(jq --raw-output '.ip' set/${name}/seat-${name}-${index}.json)
-            if ssh -i set/${name}/ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR root@${ip} true; then
-                echo " yes"
-            else
-                echo " no"
+            if test -f "set/${name}/seat-${name}-${index}.json"; then
+                ip=$(jq --raw-output '.ip' set/${name}/seat-${name}-${index}.json)
+                if ssh -i set/${name}/ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR root@${ip} true; then
+                    echo " yes"
+                else
+                    echo " no"
+                fi
             fi
             echo
         done
