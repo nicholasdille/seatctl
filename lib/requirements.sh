@@ -12,7 +12,12 @@ function process_requirements() {
         exit 1
     fi
 
-    yq --tojson read "${file}" | \
+    if ! which yq 2>&1 >/dev/null && yq --version | cut -d' ' -f4 | grep -q '^3\.' -; then
+        error "yq is not present or version is not >= 4"
+        exit 1
+    fi
+
+    yq --output-format json eval "${file}" | \
         jq --raw-output '.requirements[].name' | \
         while read -r package; do
             >&2 echo -n "Processing ${package}..."
