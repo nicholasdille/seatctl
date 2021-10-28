@@ -24,6 +24,10 @@ source "${script_base_dir}/lib/requirements.sh"
 
 process_requirements "${script_base_dir}/requirements.yaml"
 
+if test -f "${script_base_dir}/.env"; then
+    source "${script_base_dir}/.env"
+fi
+
 function run_on_seat() {
     local name=$1
     if test -z "${name}"; then
