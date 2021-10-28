@@ -76,13 +76,16 @@ function main() {
                 name=$1
             ;;
             --provider|-p)
-                provider=$1
-                if test -f "${script_base_dir}/provider/${provider}.sh"; then
-                    # shellcheck disable=SC1090
-                    source "${script_base_dir}/provider/${provider}.sh"
-                else
-                    error "Provider <${provider}> does not exist"
-                fi
+                provider_list=$1
+                providers="$(echo "${provider_list}" | tr ',' ' ')"
+                for provider in ${providers}; do
+                    if test -f "${script_base_dir}/provider/${provider}.sh"; then
+                        # shellcheck disable=SC1090
+                        source "${script_base_dir}/provider/${provider}.sh"
+                    else
+                        error "Provider <${provider}> does not exist"
+                    fi
+                done
             ;;
             --start|-s)
                 vm_start_index=$1
@@ -136,7 +139,7 @@ function main() {
         exit 1
     fi
 
-    info "provider=${provider}"
+    info "provider=${provider_list}"
     info "name=${name}"
     info "command=${command}"
 
