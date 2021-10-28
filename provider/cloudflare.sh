@@ -7,6 +7,8 @@ fi
 export CF_API_EMAIL
 export CF_API_KEY
 
+FLARECTL="${script_base_dir}/bin/flarectl"
+
 function exists_dns_record() {
     local zone=$1
     if test -z "${zone}"; then
@@ -25,7 +27,7 @@ function exists_dns_record() {
     fi
 
     >&2 echo "VERBOSE: Checking for DNS record ${name}.${zone} of type ${type}."
-    if test "$(flarectl dns list --zone "${zone}" --name "${name}.${zone}" | wc -l)" -eq 2; then
+    if test "$(${FLARECTL} dns list --zone "${zone}" --name "${name}.${zone}" | wc -l)" -eq 2; then
         return 1
     else
         return 0
@@ -54,7 +56,7 @@ function create_dns_record() {
         exit 1
     fi
 
-    flarectl dns create-or-update --zone "${zone}" --name ${name} --type "${type}" --content "${content}"
+    ${FLARECTL} dns create-or-update --zone "${zone}" --name ${name} --type "${type}" --content "${content}"
 }
 
 function remove_dns_record() {
@@ -71,7 +73,7 @@ function remove_dns_record() {
 
     local id
     id=$(
-        flarectl --json dns list --zone "${zone}" --name "${name}.${zone}" | \
+        ${FLARECTL} --json dns list --zone "${zone}" --name "${name}.${zone}" | \
             jq --raw-output '.[].ID'
     )
     if test -z "${id}"; then
@@ -79,7 +81,7 @@ function remove_dns_record() {
         exit 1
     fi
 
-    flarectl dns delete --zone "${zone}" --id "${id}"
+    ${FLARECTL} dns delete --zone "${zone}" --id "${id}"
 }
 
 function get_dns_record() {
@@ -94,6 +96,6 @@ function get_dns_record() {
         exit 1
     fi
 
-    flarectl --json dns list --zone "${zone}" | \
+    ${FLARECTL} --json dns list --zone "${zone}" | \
         jq --raw-output --arg name "${name}.${zone}" '.[] | select(.Name == $name) | "\(.Name) \(.Type) \(.Content)"'
 }

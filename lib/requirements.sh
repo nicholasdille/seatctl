@@ -1,5 +1,40 @@
 #!/bin/bash
 
+function ensure_command() {
+    local file="$1"
+    local name="$2"
+
+    local definition="$(yq --output-format json eval "${file}" | jq --raw-output --arg name "${name}" '.requirements[] | select(.name == $name)')"
+    #>&2 echo "definition=<${definition}>"
+
+    local present=false
+    local match=false
+
+    if type "${script_base_dir}/bin/${package}" >/dev/null 2>&1; then
+        echo -n " present..."
+        present=true
+    fi
+
+    if $present; then
+        local version_command="$(echo "${definition}" | jq --raw-output '.command.version')"
+        local required_version="$(echo "${definition}" | jq --raw-output '.version')"
+        local installed_version="$(eval "${script_base_dir}/bin/${version_command}")"
+        if echo "${installed_version}" | grep --quiet ${required_version}; then
+            echo -n " version matches..."
+            match=true
+        fi
+    fi
+
+    if ! ${present} || ! ${match}; then
+        local install_command="$(echo "${definition}" | jq --raw-output '.command.install')"
+
+        >&2 echo -n " installing..."
+        (cd "${script_base_dir}/bin" && eval "${install_command}")
+    fi
+
+    >&2 echo " done."
+}
+
 function process_requirements() {
     local file=$1
 
@@ -21,16 +56,6 @@ function process_requirements() {
         jq --raw-output '.requirements[].name' | \
         while read -r package; do
             >&2 echo -n "Processing ${package}..."
-            if ! type "${script_base_dir}/bin/hcloud" >/dev/null 2>&1; then
-                >&2 echo -n " installing..."
-                # shellcheck disable=SC2154
-                curl --silent https://pkg.dille.io/pkgctl.sh | \
-                    TARGET_BASE="${script_base_dir}" bash -s install "${package}"
-                rm -rf "${script_base_dir:?}/etc"
-                >&2 echo " done."
-
-            else
-                >&2 echo " present."
-            fi
+            ensure_command "${file}" "${package}"
         done
 }

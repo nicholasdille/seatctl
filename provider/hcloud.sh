@@ -25,7 +25,7 @@ function exists_virtual_machine() {
         exit 1
     fi
 
-    if test "$(hcloud server list --selector seatctl-set="${name}",seatctl-index="${index}" --output noheader | wc -l)" -gt 0; then
+    if test "$(${HCLOUD} server list --selector seatctl-set="${name}",seatctl-index="${index}" --output noheader | wc -l)" -gt 0; then
         return 0
     fi
 
@@ -54,16 +54,16 @@ function create_virtual_machine() {
         exit 1
     fi
 
-    if test "$(hcloud ssh-key list --selector seatctl-set="${name}" --output noheader | wc -l)" -eq 0; then
-        hcloud ssh-key create \
+    if test "$(${HCLOUD} ssh-key list --selector seatctl-set="${name}" --output noheader | wc -l)" -eq 0; then
+        ${HCLOUD} ssh-key create \
             --name "seatctl-set-${name}" \
             --public-key-from-file "${ssh_key}"
-        hcloud ssh-key add-label "seatctl-set-${name}" \
+        ${HCLOUD} ssh-key add-label "seatctl-set-${name}" \
             seatctl-set="${name}"
     fi
 
     local hcloud_ssh_fingerprint
-    hcloud_ssh_fingerprint=$(hcloud ssh-key list --selector seatctl-set="${name}" --output columns=fingerprint | tail -n 1)
+    hcloud_ssh_fingerprint=$(${HCLOUD} ssh-key list --selector seatctl-set="${name}" --output columns=fingerprint | tail -n 1)
     local local_ssh_fingerprint
     local_ssh_fingerprint=$(ssh-keygen -l -E md5 -f set/${name}/ssh | cut -d' ' -f2 | cut -d':' -f2-)
     if test "${hcloud_ssh_fingerprint}" != "${local_ssh_fingerprint}"; then
@@ -101,7 +101,7 @@ function get_virtual_machine_ip() {
 
     if exists_virtual_machine "${name}" "${index}"; then
         >&2 echo "VERBOSE: Fetching IP address for index ${index} in set ${name}..."
-        hcloud server list --selector seatctl-set="${name}",seatctl-index="${index}" --output columns=ipv4 | tail -n +2
+        ${HCLOUD} server list --selector seatctl-set="${name}",seatctl-index="${index}" --output columns=ipv4 | tail -n +2
     fi
 }
 
@@ -119,6 +119,6 @@ function remove_virtual_machine() {
     fi
 
     if exists_virtual_machine "${name}" "${index}"; then
-        hcloud server delete "seat-${name}-${index}"
+        ${HCLOUD} server delete "seat-${name}-${index}"
     fi
 }
