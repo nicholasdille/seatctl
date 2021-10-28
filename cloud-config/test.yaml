@@ -1,0 +1,34 @@
+#cloud-config
+
+apt:
+  conf: |
+    APT {
+      Install-Recommends "false";
+      Install-Suggests "false";
+      Get {
+        Assume-Yes "true";
+        Fix-Broken "true";
+      };
+    };
+
+package_update: true
+package_upgrade: true
+packages:
+- bash
+- curl
+- ca-certificates
+- jq
+- libcap2-bin
+- libcap-ng-utils
+- util-linux
+- git
+- make
+
+runcmd:
+- sed -i 's/GRUB_CMDLINE_LINUX=""/GRUB_CMDLINE_LINUX="systemd.unified_cgroup_hierarchy=1"/' /etc/default/grub
+- update-grub
+- curl -sL https://github.com/nicholasdille/docker-setup/raw/main/docker-setup.sh | bash
+
+power_state:
+  mode: reboot
+  delay: now

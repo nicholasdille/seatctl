@@ -70,12 +70,19 @@ function create_virtual_machine() {
     fi
 
     if ! exists_virtual_machine "${name}" "${index}"; then
+        local user_data_file="${script_base_dir}/cloud-config/${name}.yaml"
+        if test -f "${user_data_file}"; then
+            local user_data_param="--user-data-from-file ${user_data_file}"
+        fi
+        debug "user_data_param=${user_data_param}."
+
         ${HCLOUD} server create \
             --name "seat-${name}-${index}" \
             --location fsn1 \
             --type cx21 \
             --image ubuntu-20.04 \
             --ssh-key "seatctl-set-${name}" \
+            ${user_data_param} \
             --label seatctl-set="${name}" \
             --label seatctl-index="${index}"
 
@@ -98,7 +105,7 @@ function get_virtual_machine_ip() {
     fi
 
     if exists_virtual_machine "${name}" "${index}"; then
-        verbose "Fetching IP address for index ${index} in set ${name}..."
+        >&2 echo "Fetching IP address for index ${index} in set ${name}..."
         ${HCLOUD} server list --selector seatctl-set="${name}",seatctl-index="${index}" --output columns=ipv4 | tail -n +2
     fi
 }
