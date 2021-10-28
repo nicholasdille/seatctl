@@ -1,8 +1,6 @@
 #!/bin/bash
 
-if test -n "${HCLOUD_CONTEXT}" || test -n "${HCLOUD_TOKEN}"; then
-    :
-else
+if test -z "${HCLOUD_CONTEXT}" && test -z "${HCLOUD_TOKEN}"; then
     error "Provider hcloud requires either environment variable HCLOUD_CONTEXT or HCLOUD_TOKEN"
     exit 1
 fi
