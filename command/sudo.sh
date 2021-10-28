@@ -38,7 +38,7 @@ seatctl <global options> sudo
 Sets sudo without password.
 
 Command options:
-  --help      XXX
+  --help      Show help
 EOF
 }
 

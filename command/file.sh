@@ -72,17 +72,17 @@ dns_help() {
     cat <<EOF
 seatctl <global options> file <command options>
 
-Adds DNS records.
+Transfer files with VMs.
 
 Command options:
-  --command      XXX (required)
-  --file         XXX (required)
-  --directory    XXX (required)
-  --help         XXX
+  --command      Sub-command to execute (required)
+  --file         Source file (required)
+  --directory    Targert directory (required)
+  --help         Show help
 
 Sub-commands:
-  put    XXX
-  get    XXX
+  put    Copy file to VMs
+  get    Copy file from VMs
 EOF
 }
 

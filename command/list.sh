@@ -55,7 +55,7 @@ seatctl <global options> list
 List virtual machine.
 
 Command options:
-  --help      XXX
+  --help      Show help
 EOF
 }
 

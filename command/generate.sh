@@ -50,14 +50,13 @@ function generate_main() {
 generate_help() {
     cat <<EOF
 seatctl <global options> generate <command options>
-seatctl <global options> generate <command options>
 
 Generates passwords.
 
 Command options:
-  --zone      XXX (required)
-  --length    XXX (optional, defaults to 32)
-  --help      XXX
+  --zone      DNS zone of VMs (required)
+  --length    Length of passwords (optional, defaults to 32)
+  --help      Show help
 EOF
 }
 

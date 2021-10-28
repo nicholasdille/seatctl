@@ -162,26 +162,26 @@ function show_help() {
 seatctl [global options] <command> [command options]
 
 Global options:
-  --name, -n        XXX (required)
-  --provider, -p    XXX (required for some commands)
-  --start, -s       XXX
-  --count, -c       XXX (required instead of --list)
-  --list, -l        XXX (required instead of --count)
-  --help            XXX
-  --version         XXX
+  --name, -n        Base name for VM management (required)
+  --provider, -p    Supported provider for VM or DNS management (required for some commands)
+  --start, -s       First index
+  --count, -c       Total number of items (required instead of --list)
+  --list, -l        List of indexes (required instead of --count)
+  --help            Show help
+  --version         Show version
 
 Commands:
-  add         XXX
-  dns         XXX
-  file        XXX
-  generate    XXX
-  list        XXX
-  remove      XXX
-  run         XXX
-  tls         XXX
-  ssh         XXX
-  sudo        XXX
-  user        XXX
+  add         Create new virtual machines
+  dns         Create DNS records for VMs
+  file        Transfer file with VMs
+  generate    Generate password list to use with <user> subcommand
+  list        List virtual machines
+  remove      Remove virtual machines
+  run         Executes a command on the VMs
+  tls         NOT IMPLEMENTED
+  ssh         Enter remote shell using SSH
+  sudo        Set sudo without password for user on VM
+  user        Configure user account on VM
 EOF
 }
 

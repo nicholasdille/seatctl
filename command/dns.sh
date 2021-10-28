@@ -101,13 +101,14 @@ seatctl <global options> dns <command options>
 Adds DNS records. Required DNS provider.
 
 Command options:
-  --zone       XXX (required)
-  --command    XXX (required)
-  --help       XXX
+  --zone       DNS zone for records (required)
+  --command    Sub-command to execute (required)
+  --help       Show help
 
 Sub-commands:
-  add       XXX
-  remove    XXX
+  add       Add DNS records for VM
+  remove    Remove DNS records for VM
+  show      Show DNS records for VM
 EOF
 }
 

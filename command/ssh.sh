@@ -51,8 +51,8 @@ seatctl <global options> ssh <options>
 Enters a remote shell using SSH.
 
 Command options:
-  --type      XXX (optional, defaults to root)
-  --help      XXX
+  --type      (root|user) Root shell or user shell (optional, defaults to root)
+  --help      Show help
 EOF
 }
 

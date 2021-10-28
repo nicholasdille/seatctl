@@ -92,7 +92,7 @@ seatctl <global options> run -- <command>
 Executes a command remotely.
 
 Command options:
-  --help      XXX
+  --help      Show help
 EOF
 }
 

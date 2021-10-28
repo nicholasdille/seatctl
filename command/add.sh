@@ -63,7 +63,7 @@ seatctl <global options> add <command options>
 Adds a new virtual machine. Requires virtual machine provider.
 
 Command options:
-  --help    XXX
+  --help    Show help
 EOF
 }
 

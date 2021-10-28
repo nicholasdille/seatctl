@@ -36,7 +36,7 @@ seatctl <global options> remove
 Removes a virtual machine. Requires virtual machine provider.
 
 Command options:
-  --help    XXX
+  --help    Show help
 EOF
 }
 

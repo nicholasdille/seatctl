@@ -85,18 +85,19 @@ user_help() {
     cat <<EOF
 seatctl <global options> user <command options>
 
-Sets sudo without password.
+Configure user account on VM.
 
 Command options:
-  --command    XXX (required)
-  --help       XXX
+  --command    Sub-command to execute (required)
+  --help       Show help
 
 Sub-commands:
-  add       XXX
-  remove    XXX
-  lock      XXX
-  unlock    XXX
-  reset     XXX
+  add       Create user account
+  remove    Remove user account
+  lock      Lock user account (deny login)
+  unlock    Unlock user account (allow login)
+  reset     Reset password
+  test      Test authentication
 EOF
 }
 
