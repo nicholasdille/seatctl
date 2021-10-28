@@ -65,7 +65,7 @@ function create_virtual_machine() {
     local local_ssh_fingerprint
     local_ssh_fingerprint=$(ssh-keygen -l -E md5 -f set/${name}/ssh | cut -d' ' -f2 | cut -d':' -f2-)
     if test "${hcloud_ssh_fingerprint}" != "${local_ssh_fingerprint}"; then
-        echo "ERROR: SSH key fingerprints do not match"
+        error "SSH key fingerprints do not match"
         exit 1
     fi
 
@@ -80,7 +80,7 @@ function create_virtual_machine() {
             --label seatctl-index="${index}"
 
     else
-        >&2 echo "VERBOSE: Virtual machine with index ${index} in set ${name} already exists"
+        verbose "Virtual machine with index ${index} in set ${name} already exists"
     fi
 }
 
@@ -98,7 +98,7 @@ function get_virtual_machine_ip() {
     fi
 
     if exists_virtual_machine "${name}" "${index}"; then
-        >&2 echo "VERBOSE: Fetching IP address for index ${index} in set ${name}..."
+        verbose "Fetching IP address for index ${index} in set ${name}..."
         ${HCLOUD} server list --selector seatctl-set="${name}",seatctl-index="${index}" --output columns=ipv4 | tail -n +2
     fi
 }

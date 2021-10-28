@@ -26,7 +26,7 @@ function exists_dns_record() {
         exit 1
     fi
 
-    >&2 echo "VERBOSE: Checking for DNS record ${name}.${zone} of type ${type}."
+    verbose "Checking for DNS record ${name}.${zone} of type ${type}."
     if test "$(${FLARECTL} dns list --zone "${zone}" --name "${name}.${zone}" | wc -l)" -eq 2; then
         return 1
     else
@@ -77,7 +77,7 @@ function remove_dns_record() {
             jq --raw-output '.[].ID'
     )
     if test -z "${id}"; then
-        echo "ERROR: Unable to determine ID for deletion"
+        error "Unable to determine ID for deletion"
         exit 1
     fi
 
@@ -87,12 +87,12 @@ function remove_dns_record() {
 function get_dns_record() {
     local zone=$1
     if test -z "${zone}"; then
-        echo "ERROR: Zone must be specified"
+        error "Zone must be specified"
         exit 1
     fi
     local name=$2
     if test -z "${name}"; then
-        echo "ERROR: Name must be specified"
+        error "Name must be specified"
         exit 1
     fi
 

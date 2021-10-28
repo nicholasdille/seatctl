@@ -1,6 +1,6 @@
 #!/bin/bash
 
-LOG_LEVEL_ID=0
+LOG_LEVEL_ID=2
 
 INFO=0
 VERBOSE=1

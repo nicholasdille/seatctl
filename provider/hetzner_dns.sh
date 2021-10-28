@@ -9,7 +9,7 @@ export HETZNER_DNS_API_TOKEN
 function get_dns_zone_id() {
     local zone=$1
     if test -z "${zone}"; then
-        echo "ERROR: Zone must be specified"
+        error "Zone must be specified"
         exit 1
     fi
 
@@ -22,19 +22,19 @@ function get_dns_zone_id() {
 function get_dns_record_id() {
     local zone=$1
     if test -z "${zone}"; then
-        echo "ERROR: Zone must be specified"
+        error "Zone must be specified"
         exit 1
     fi
     local name=$2
     if test -z "${name}"; then
-        echo "ERROR: Name must be specified"
+        error "Name must be specified"
         exit 1
     fi
     local type=$3
 
     local id=$(get_dns_zone_id "${zone}")
 
-    >&2 echo "VERBOSE: Checking for DNS record ${name}.${zone} of type ${type}."
+    verbose "Checking for DNS record ${name}.${zone} of type ${type}."
     curl "https://dns.hetzner.com/api/v1/records?zone_id=${id}" \
         --silent \
         --header "Auth-API-Token: ${HETZNER_DNS_API_TOKEN}" | \
@@ -44,27 +44,27 @@ function get_dns_record_id() {
 function exists_dns_record() {
     local zone=$1
     if test -z "${zone}"; then
-        echo "ERROR: Zone must be specified"
+        error "Zone must be specified"
         exit 1
     fi
     local name=$2
     if test -z "${name}"; then
-        echo "ERROR: Name must be specified"
+        error "Name must be specified"
         exit 1
     fi
     local type=$3
     if test -z "${type}"; then
-        echo "ERROR: Type must be specified"
+        error "Type must be specified"
         exit 1
     fi
 
-    >&2 echo "VERBOSE: Checking for DNS record ${name}.${zone} of type ${type}."
+    verbose "Checking for DNS record ${name}.${zone} of type ${type}."
     local record="$(get_dns_record_id "${zone}" "${name}" "${type}")"
     if test -z "${record}"; then
-        >&2 echo "Record ${name}.${zone} of type ${type} does not exist"
+        verbose "Record ${name}.${zone} of type ${type} does not exist"
         return 1
     else
-        >&2 echo "Record ${name}.${zone} of type ${type} exists"
+        verbose "Record ${name}.${zone} of type ${type} exists"
         return 0
     fi
 }
@@ -72,22 +72,22 @@ function exists_dns_record() {
 function create_dns_record() {
     local zone=$1
     if test -z "${zone}"; then
-        echo "ERROR: Zone must be specified"
+        error "Zone must be specified"
         exit 1
     fi
     local name=$2
     if test -z "${name}"; then
-        echo "ERROR: Name must be specified"
+        error "Name must be specified"
         exit 1
     fi
     local type=$3
     if test -z "${type}"; then
-        echo "ERROR: Type must be specified"
+        error "Type must be specified"
         exit 1
     fi
     local content=$4
     if test -z "${content}"; then
-        echo "ERROR: Content must be specified"
+        error "Content must be specified"
         exit 1
     fi
 
@@ -113,12 +113,12 @@ EOF
 function remove_dns_record() {
     local zone=$1
     if test -z "${zone}"; then
-        echo "ERROR: Zone must be specified"
+        error "Zone must be specified"
         exit 1
     fi
     local name=$2
     if test -z "${name}"; then
-        echo "ERROR: Name must be specified"
+        error "Name must be specified"
         exit 1
     fi
 
@@ -134,12 +134,12 @@ function remove_dns_record() {
 function get_dns_record() {
     local zone=$1
     if test -z "${zone}"; then
-        echo "ERROR: Zone must be specified"
+        error "Zone must be specified"
         exit 1
     fi
     local name=$2
     if test -z "${name}"; then
-        echo "ERROR: Name must be specified"
+        error "Name must be specified"
         exit 1
     fi
 

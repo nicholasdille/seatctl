@@ -105,6 +105,9 @@ function main() {
                     error "Parameter --list cannot be used with --start and/or --count"
                 fi
             ;;
+            --log-level|-l)
+                LOG_LEVEL_ID="$(get_log_level_id "$1")"
+            ;;
             --help)
                 show_help
                 exit 0
@@ -139,9 +142,9 @@ function main() {
         exit 1
     fi
 
-    info "provider=${provider_list}"
-    info "name=${name}"
-    info "command=${command}"
+    verbose "provider=${provider_list}"
+    verbose "name=${name}"
+    verbose "command=${command}"
 
     if test -z "${vm_list}"; then
         if test -z "${vm_count}"; then
@@ -155,10 +158,10 @@ function main() {
         )
     fi
 
-    info "vm_start_index=${vm_start_index}"
-    info "vm_count=${vm_count}"
+    verbose "vm_start_index=${vm_start_index}"
+    verbose "vm_count=${vm_count}"
     # shellcheck disable=SC2116
-    info "vm_list=$(echo "${vm_list}" | tr '\n' ' ')"
+    verbose "vm_list=$(echo "${vm_list}" | tr '\n' ' ')"
 
     # shellcheck disable=SC1090
     source "${script_base_dir}/command/${command}.sh"
@@ -176,6 +179,7 @@ Global options:
   --start, -s       First index
   --count, -c       Total number of items (required instead of --list)
   --list, -l        List of indexes (required instead of --count)
+  --log-level       Verbosity (info, verbose, debug)
   --help            Show help
   --version         Show version
 

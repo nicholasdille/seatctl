@@ -5,13 +5,12 @@ function ensure_command() {
     local name="$2"
 
     local definition="$(yq --output-format json eval "${file}" | jq --raw-output --arg name "${name}" '.requirements[] | select(.name == $name)')"
-    #>&2 echo "definition=<${definition}>"
 
     local present=false
     local match=false
 
     if type "${script_base_dir}/bin/${package}" >/dev/null 2>&1; then
-        echo -n " present..."
+        verbose "+- Requirement present"
         present=true
     fi
 
@@ -20,7 +19,7 @@ function ensure_command() {
         local required_version="$(echo "${definition}" | jq --raw-output '.version')"
         local installed_version="$(eval "${script_base_dir}/bin/${version_command}")"
         if echo "${installed_version}" | grep --quiet ${required_version}; then
-            echo -n " version matches..."
+            verbose "+- Version matches"
             match=true
         fi
     fi
@@ -28,11 +27,9 @@ function ensure_command() {
     if ! ${present} || ! ${match}; then
         local install_command="$(echo "${definition}" | jq --raw-output '.command.install')"
 
-        >&2 echo -n " installing..."
+        verbose "+- Installing"
         (cd "${script_base_dir}/bin" && eval "${install_command}")
     fi
-
-    >&2 echo " done."
 }
 
 function process_requirements() {
@@ -55,7 +52,7 @@ function process_requirements() {
     yq --output-format json eval "${file}" | \
         jq --raw-output '.requirements[].name' | \
         while read -r package; do
-            >&2 echo -n "Processing ${package}..."
+            verbose "Processing ${package}..."
             ensure_command "${file}" "${package}"
         done
 }
