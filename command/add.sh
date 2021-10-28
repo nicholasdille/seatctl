@@ -1,6 +1,8 @@
 #!/bin/bash
 
 function add_main() {
+    assert_functions "Missing VM provider" create_virtual_machine get_virtual_machine_ip
+
     while test "$#" -gt 0; do
         local parameter=$1
         shift

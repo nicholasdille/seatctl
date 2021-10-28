@@ -1,6 +1,8 @@
 #!/bin/bash
 
 function dns_main() {
+    assert_functions "Missing DNS provider" exists_dns_record create_dns_record remove_dns_record get_dns_record
+
     local command
     local zone
     local force=false

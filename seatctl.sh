@@ -15,6 +15,8 @@ fi
 
 # shellcheck source=lib/color.sh
 source "${script_base_dir}/lib/color.sh"
+# shellcheck source=lib/common.sh
+source "${script_base_dir}/lib/common.sh"
 # shellcheck source=lib/logging.sh
 source "${script_base_dir}/lib/logging.sh"
 # shellcheck source=lib/requirements.sh

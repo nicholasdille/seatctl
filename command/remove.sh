@@ -1,6 +1,8 @@
 #!/bin/bash
 
 function remove_main() {
+    assert_functions "Missing VM provider" remove_virtual_machine
+
     while test "$#" -gt 0; do
         local parameter=$1
         shift

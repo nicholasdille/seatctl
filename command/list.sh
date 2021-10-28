@@ -1,6 +1,8 @@
 #!/bin/bash
 
 list_main() {
+    assert_functions "Missing VM provider" exists_virtual_machine
+
     while test "$#" -gt 0; do
         local parameter=$1
         shift
