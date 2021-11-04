@@ -1,6 +1,6 @@
 #!/bin/bash
 
-LOG_LEVEL_ID=2
+LOG_LEVEL_ID=0
 
 INFO=0
 VERBOSE=1
@@ -38,7 +38,7 @@ function log() {
 
     local level_id
     level_id="$(get_log_level_id "${level}")"
-    if test "${level_id}" -ge ${LOG_LEVEL_ID}; then
+    if test "${level_id}" -le ${LOG_LEVEL_ID}; then
         local color="${level^^}_COLOR"
         echo_color "${!color}" "${level^^}: ${message}"
     fi
