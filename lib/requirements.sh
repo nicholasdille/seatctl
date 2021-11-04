@@ -4,7 +4,10 @@ function ensure_command() {
     local file="$1"
     local name="$2"
 
-    local definition="$(yq --output-format json eval "${file}" | jq --raw-output --arg name "${name}" '.requirements[] | select(.name == $name)')"
+    local definition="$(
+        cat requirements.json | \
+            jq --raw-output --arg name "${name}" '.requirements[] | select(.name == $name)'
+    )"
 
     local present=false
     local match=false
@@ -44,12 +47,16 @@ function process_requirements() {
         exit 1
     fi
 
-    if ! which yq 2>&1 >/dev/null && yq --version | cut -d' ' -f4 | grep -q '^3\.' -; then
-        error "yq is not present or version is not >= 4"
-        exit 1
+    if ! test -f "${script_base_dir}/bin/yq"; then
+        curl https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 \
+            --silent \
+            --location \
+            --output "${script_base_dir}/bin/yq"
+        chmod +x "${script_base_dir}/bin/yq"
     fi
 
-    yq --output-format json eval "${file}" | \
+    "${script_base_dir}/bin/yq" --output-format json eval "${file}" >requirements.json
+    cat requirements.json | \
         jq --raw-output '.requirements[].name' | \
         while read -r package; do
             verbose "Processing ${package}..."

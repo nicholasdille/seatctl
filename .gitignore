@@ -1,4 +1,5 @@
 .env
+requirements.json
 bin
 set
 passwords.csv

@@ -5,7 +5,7 @@ requirements:
     version: hcloud version
     install: curl -sL https://github.com/hetznercloud/cli/releases/download/v1.28.1/hcloud-linux-amd64.tar.gz | tar -xz hcloud
 - name: flarectl
-  version: 0.26.0 # renovate: datasource=github-releases depName=hetznercloud/cli versioning=regex:^v(?<major>\d+?)\.(?<minor>\d+?)\.(?<patch>\d+?)(-(?<prerelease>.+?))?$
+  version: 0.26.0 # renovate: datasource=github-releases depName=cloudflare/cloudflare-go versioning=regex:^v(?<major>\d+?)\.(?<minor>\d+?)\.(?<patch>\d+?)(-(?<prerelease>.+?))?$
   command:
     version: flarectl --version
     install: curl -sL https://github.com/cloudflare/cloudflare-go/releases/download/v0.26.0/flarectl_0.26.0_linux_amd64.tar.xz | tar -xJ flarectl
