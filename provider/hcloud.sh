@@ -73,6 +73,8 @@ function create_virtual_machine() {
         local user_data_file="${script_base_dir}/cloud-config/${name}.yaml"
         if test -f "${user_data_file}"; then
             local user_data_param="--user-data-from-file ${user_data_file}"
+        else
+            local user_data_param="--user-data-from-file ${script_base_dir}/cloud-config/default.yaml"
         fi
         debug "user_data_param=${user_data_param}."
 
