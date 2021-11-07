@@ -77,15 +77,6 @@ function main() {
             ;;
             --provider|-p)
                 provider_list=$1
-                providers="$(echo "${provider_list}" | tr ',' ' ')"
-                for provider in ${providers}; do
-                    if test -f "${script_base_dir}/provider/${provider}.sh"; then
-                        # shellcheck disable=SC1090
-                        source "${script_base_dir}/provider/${provider}.sh"
-                    else
-                        error "Provider <${provider}> does not exist"
-                    fi
-                done
             ;;
             --start|-s)
                 vm_start_index=$1
@@ -142,9 +133,28 @@ function main() {
         exit 1
     fi
 
-    verbose "provider=${provider_list}"
     verbose "name=${name}"
+
+    if test -z "${provider_list}"; then
+        if test -f "${script_base_dir}/set/${name}/providers.txt"; then
+            provider_list=$(
+                cat "${script_base_dir}/set/${name}/providers.txt"
+            )
+        fi
+    fi
+
+    verbose "provider=${provider_list}"
     verbose "command=${command}"
+
+    providers="$(echo "${provider_list}" | tr ',' ' ')"
+    for provider in ${providers}; do
+        if test -f "${script_base_dir}/provider/${provider}.sh"; then
+            # shellcheck disable=SC1090
+            source "${script_base_dir}/provider/${provider}.sh"
+        else
+            error "Provider <${provider}> does not exist"
+        fi
+    done
 
     if test -z "${vm_list}"; then
         if test -z "${vm_count}"; then
