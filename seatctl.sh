@@ -148,14 +148,27 @@ function main() {
 
     if test -z "${vm_list}"; then
         if test -z "${vm_count}"; then
-            error "You must specify either --list or --count."
-            exit 1
+            if test -d "${script_base_dir}/set/${name}" && test "$(ls set/${name}/seat-${name}-*.json | wc -l)" -gt 0; then
+                vm_list=$(
+                    ls set/cc21/seat-cc21-*.json | \
+                        cut -d/ -f3 | \
+                        cut -d. -f1 | \
+                        cut -d- -f3 | \
+                        sort -V
+                )
+            else
+                error "You must specify either --list or --count or run on an existing set."
+                exit 1
+            fi
         fi
-        vm_list=$(
-            seq \
-                "${vm_start_index}" \
-                "$(( "${vm_start_index}" + "${vm_count}" - 1 ))"
-        )
+
+        if test -z "${vm_list}"; then
+            vm_list=$(
+                seq \
+                    "${vm_start_index}" \
+                    "$(( "${vm_start_index}" + "${vm_count}" - 1 ))"
+            )
+        fi
     fi
 
     verbose "vm_start_index=${vm_start_index}"
