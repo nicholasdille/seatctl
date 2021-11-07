@@ -27,7 +27,7 @@ function add_main() {
     # shellcheck disable=SC2154
     if ! test -f "${script_base_dir}/set/${name}/ssh"; then
         # shellcheck disable=SC2154
-        ssh-keygen -f "${script_base_dir}/set/${name}/ssh" -N ''
+        ssh-keygen -f "${script_base_dir}/set/${name}/ssh" -t ed25519 -N ''
     fi
 
     # shellcheck disable=SC2154
