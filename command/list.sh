@@ -23,25 +23,29 @@ list_main() {
     done
 
     (
-        echo "Set Index Provisioned Available"
+        echo "Set Index Provisioned IP Available"
 
         # shellcheck disable=SC2154
         for index in ${vm_list}; do
             >&2 echo -e -n "\rChecking seat ${index}"
 
+            # Set Index
             echo -n "${name} ${index}"
+
+            # Provisioned
             if exists_virtual_machine "${name}" "${index}"; then
                 echo -n " yes"
             else
                 echo -n " no"
             fi
 
+            # Available
             if test -f "set/${name}/seat-${name}-${index}.json"; then
                 ip=$(jq --raw-output '.ip' set/${name}/seat-${name}-${index}.json)
                 if ssh -i set/${name}/ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR root@${ip} true; then
-                    echo " yes"
+                    echo -n " ${ip} yes"
                 else
-                    echo " no"
+                    echo -n " ${ip} no"
                 fi
             fi
             echo
