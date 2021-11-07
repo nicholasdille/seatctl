@@ -43,7 +43,7 @@ function run_on_seat() {
     fi
     shift
 
-    ip=$(jq --raw-output '.ip' set/${name}/seat-${name}-${index}.json)
+    ip=$(jq --raw-output '.ip' "${script_base_dir}/set/${name}/seat-${name}-${index}.json")
     ssh -i "${script_base_dir}/set/${name}/ssh" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR "root@${ip}" "$@"
 }
 
@@ -158,9 +158,9 @@ function main() {
 
     if test -z "${vm_list}"; then
         if test -z "${vm_count}"; then
-            if test -d "${script_base_dir}/set/${name}" && test "$(ls set/${name}/seat-${name}-*.json | wc -l)" -gt 0; then
+            if test -d "${script_base_dir}/set/${name}" && test "$(ls ${script_base_dir}/set/${name}/seat-${name}-*.json | wc -l)" -gt 0; then
                 vm_list=$(
-                    ls set/cc21/seat-cc21-*.json | \
+                    ls ${script_base_dir}/set/${name}/seat-${name}-*.json | \
                         cut -d/ -f3 | \
                         cut -d. -f1 | \
                         cut -d- -f3 | \

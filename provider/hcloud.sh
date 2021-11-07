@@ -63,7 +63,7 @@ function create_virtual_machine() {
     local hcloud_ssh_fingerprint
     hcloud_ssh_fingerprint=$(${HCLOUD} ssh-key list --selector seatctl-set="${name}" --output columns=fingerprint | tail -n 1)
     local local_ssh_fingerprint
-    local_ssh_fingerprint=$(ssh-keygen -l -E md5 -f set/${name}/ssh | cut -d' ' -f2 | cut -d':' -f2-)
+    local_ssh_fingerprint=$(ssh-keygen -l -E md5 -f "${script_base_dir}/set/${name}/ssh" | cut -d' ' -f2 | cut -d':' -f2-)
     if test "${hcloud_ssh_fingerprint}" != "${local_ssh_fingerprint}"; then
         error "SSH key fingerprints do not match"
         exit 1

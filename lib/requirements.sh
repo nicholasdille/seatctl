@@ -5,7 +5,7 @@ function ensure_command() {
     local name="$2"
 
     local definition="$(
-        cat requirements.json | \
+        cat "${script_base_dir}/requirements.json" | \
             jq --raw-output --arg name "${name}" '.requirements[] | select(.name == $name)'
     )"
 
@@ -55,8 +55,8 @@ function process_requirements() {
         chmod +x "${script_base_dir}/bin/yq"
     fi
 
-    "${script_base_dir}/bin/yq" --output-format json eval "${file}" >requirements.json
-    cat requirements.json | \
+    "${script_base_dir}/bin/yq" --output-format json eval "${file}" >"${script_base_dir}/requirements.json"
+    cat "${script_base_dir}/requirements.json" | \
         jq --raw-output '.requirements[].name' | \
         while read -r package; do
             verbose "Processing ${package}..."

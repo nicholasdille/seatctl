@@ -47,15 +47,15 @@ function run_main() {
     # shellcheck disable=SC2154
     for index in ${vm_list}; do
         info "Running on seat-${name}-${index}"
-        ip=$(jq --raw-output '.ip' set/${name}/seat-${name}-${index}.json)
+        ip=$(jq --raw-output '.ip' "${script_base_dir}/set/${name}/seat-${name}-${index}.json")
 
         if ${test}; then
             command=("sleep" "$(shuf -i 1-10 -n 1)")
         fi
 
         if ${parallel}; then
-            echo "$(date +"[%Y-%m-%d %H:%M:%S]") ${command[@]}" >>set/${name}/seat-${name}-${index}.log
-            ssh -i "${script_base_dir}/set/${name}/ssh" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR "root@${ip}" -- "${command[@]}" >>set/${name}/seat-${name}-${index}.log 2>&1 &
+            echo "$(date +"[%Y-%m-%d %H:%M:%S]") ${command[@]}" >>"${script_base_dir}/set/${name}/seat-${name}-${index}.log"
+            ssh -i "${script_base_dir}/set/${name}/ssh" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR "root@${ip}" -- "${command[@]}" >>"${script_base_dir}/set/${name}/seat-${name}-${index}.log" 2>&1 &
             processes+=("$!")
         else
             ssh -i "${script_base_dir}/set/${name}/ssh" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR "root@${ip}" -- "${command[@]}"

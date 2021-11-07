@@ -40,9 +40,9 @@ list_main() {
             fi
 
             # Available
-            if test -f "set/${name}/seat-${name}-${index}.json"; then
-                ip=$(jq --raw-output '.ip' set/${name}/seat-${name}-${index}.json)
-                if ssh -i set/${name}/ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR root@${ip} true; then
+            if test -f "${script_base_dir}/set/${name}/seat-${name}-${index}.json"; then
+                ip=$(jq --raw-output '.ip' ${script_base_dir}/set/${name}/seat-${name}-${index}.json)
+                if ssh -i "${script_base_dir}/set/${name}/ssh" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR root@${ip} true; then
                     echo -n " ${ip} yes"
                 else
                     echo -n " ${ip} no"

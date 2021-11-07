@@ -53,7 +53,7 @@ function file_main() {
     for index in ${vm_list}; do
         info "Running on seat-${name}-${index}"
 
-        ip=$(jq --raw-output '.ip' set/${name}/seat-${name}-${index}.json)
+        ip=$(jq --raw-output '.ip' "${script_base_dir}/set/${name}/seat-${name}-${index}.json")
 
         case "${command}" in
             put)

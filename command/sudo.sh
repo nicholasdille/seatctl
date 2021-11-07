@@ -23,7 +23,7 @@ sudo_main() {
     for index in ${vm_list}; do
         info "Running on seat-${name}-${index}"
 
-        ip=$(jq --raw-output '.ip' set/${name}/seat-${name}-${index}.json)
+        ip=$(jq --raw-output '.ip' "${script_base_dir}/set/${name}/seat-${name}-${index}.json")
 
         echo "seat${index} ALL=(ALL) NOPASSWD:ALL" | ssh -i "${script_base_dir}/set/${name}/ssh" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR "root@${ip}" "cat >/etc/sudoers.d/seat${index}"
     done

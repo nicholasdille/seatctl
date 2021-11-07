@@ -27,7 +27,7 @@ function ssh_main() {
 
     if test "${type}" == "user"; then
         for index in ${vm_list}; do
-            ip=$(jq --raw-output '.ip' set/${name}/seat-${name}-${index}.json)
+            ip=$(jq --raw-output '.ip' "${script_base_dir}/set/${name}/seat-${name}-${index}.json")
             ssh -i "${script_base_dir}/set/${name}/ssh" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR "seat${index}@${ip}"
         done
 
