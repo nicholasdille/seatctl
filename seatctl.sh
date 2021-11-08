@@ -159,8 +159,10 @@ function main() {
     if test -z "${vm_list}"; then
         if test -z "${vm_count}"; then
             if test -d "${script_base_dir}/set/${name}" && test "$(ls ${script_base_dir}/set/${name}/seat-${name}-*.json | wc -l)" -gt 0; then
+                ROOT_DIR=$(git rev-parse --show-toplevel)
                 vm_list=$(
                     ls ${script_base_dir}/set/${name}/seat-${name}-*.json | \
+                        sed -E "s|${ROOT_DIR}/||" | \
                         cut -d/ -f3 | \
                         cut -d. -f1 | \
                         cut -d- -f3 | \
