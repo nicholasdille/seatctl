@@ -42,4 +42,4 @@ Command options:
 EOF
 }
 
-sudo_main
+sudo_main "$@"

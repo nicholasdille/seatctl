@@ -75,6 +75,9 @@ function user_main() {
                     error "Failed to test index ${index}"
                 fi
             ;;
+            docker-group)
+                run_on_seat "${name}" "${index}" usermod -aG docker "seat${index}"
+            ;;
         esac
     done
 

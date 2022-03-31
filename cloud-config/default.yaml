@@ -23,11 +23,15 @@ packages:
 - util-linux
 - git
 - make
+- unzip
 
 runcmd:
 - sed -i 's/GRUB_CMDLINE_LINUX=""/GRUB_CMDLINE_LINUX="systemd.unified_cgroup_hierarchy=1"/' /etc/default/grub
 - update-grub
-- curl -sL https://github.com/nicholasdille/docker-setup/raw/main/docker-setup.sh | bash
+- curl -sLo /usr/local/bin/docker-setup https://github.com/nicholasdille/docker-setup/releases/latest/download/docker-setup.sh
+- chmod +x /usr/local/bin/docker-setup
+- sed -i 's/%t/%T/' /usr/local/bin/docker-setup
+- docker-setup --plan
 
 power_state:
   mode: reboot
