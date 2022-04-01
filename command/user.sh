@@ -44,39 +44,39 @@ function user_main() {
 
         case "${command}" in
             add)
-                run_on_seat "${name}" "${index}" useradd --create-home --shell /bin/bash "seat${index}"
+                run_on_seat "${name}" "${index}" useradd --create-home --shell /bin/bash "seat"
             ;;
             remove)
-                run_on_seat "${name}" "${index}" userdel "seat${index}"
+                run_on_seat "${name}" "${index}" userdel "seat"
             ;;
             lock)
-                run_on_seat "${name}" "${index}" usermod --lock "seat${index}"
+                run_on_seat "${name}" "${index}" usermod --lock "seat"
             ;;
             unlock)
-                run_on_seat "${name}" "${index}" usermod --unlock "seat${index}"
+                run_on_seat "${name}" "${index}" usermod --unlock "seat"
             ;;
             reset)
                 local password
-                password=$(cat "${script_base_dir}/set/${name}/passwords.csv" | grep ";seat${index};" | cut -d';' -f3)
+                password=$(cat "${script_base_dir}/set/${name}/passwords.csv" | grep "^seat${index}." | cut -d';' -f3)
                 if test -z "${password}"; then
                     error "No password found"
                     continue
                 fi
-                run_on_seat "${name}" "${index}" "echo seat${index}:${password} | chpasswd"
+                run_on_seat "${name}" "${index}" "echo seat:${password} | chpasswd"
             ;;
             test)
                 local password
-                password=$(cat "${script_base_dir}/set/${name}/passwords.csv" | grep ";seat${index};" | cut -d';' -f3)
+                password=$(cat "${script_base_dir}/set/${name}/passwords.csv" | grep "^seat${index}." | cut -d';' -f3)
                 if test -z "${password}"; then
                     error "No password found"
                     continue
                 fi
-                if ! sshpass -p "${password}" ssh -o StrictHostKeyChecking=no -o LogLevel=Error seat${index}@seat${index}.${zone} true; then
+                if ! sshpass -p "${password}" ssh -o StrictHostKeyChecking=no -o LogLevel=Error seat@seat${index}.${zone} true; then
                     error "Failed to test index ${index}"
                 fi
             ;;
             docker-group)
-                run_on_seat "${name}" "${index}" usermod -aG docker "seat${index}"
+                run_on_seat "${name}" "${index}" usermod -aG docker "seat"
             ;;
         esac
     done

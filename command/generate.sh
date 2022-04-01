@@ -41,7 +41,7 @@ function generate_main() {
         local password
         password=$(openssl rand -hex "${length}")
 
-        echo "seat${index}.${zone};seat${index};${password}"
+        echo "seat${index}.${zone};seat;${password}"
     done
 
     exit 0
