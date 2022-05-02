@@ -29,7 +29,7 @@ function var_main() {
         shift
     done
 
-    if test -z "${name}"; then
+    if test -z "${var_name}"; then
         error "Variable name not specified"
         var_help
         exit 1
