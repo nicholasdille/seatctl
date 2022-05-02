@@ -90,6 +90,11 @@ function dns_main() {
                     get_dns_record "${zone}" "*.seat${index}"
                 ) | column -t
             ;;
+            var)
+                var_name=DOMAIN
+                var_value="seat${index}.${zone}"
+                echo "export ${var_name}=${var_value}" | ssh -i "${script_base_dir}/set/${name}/ssh" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR "root@${ip}" "cat >/etc/profile.d/${var_name}.sh"
+            ;;
         esac
     done
 
@@ -111,6 +116,7 @@ Sub-commands:
   add       Add DNS records for VM
   remove    Remove DNS records for VM
   show      Show DNS records for VM
+  var       Add environment variable with domain
 EOF
 }
 
