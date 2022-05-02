@@ -66,7 +66,7 @@ function dns_main() {
                     info "DNS record for *.seat${index}.${zone} already exists"
                 else
                     info "Creating DNS record for *.seat${index}.${zone}..."
-                    create_dns_record "${zone}" "*.seat${index}" CNAME "seat${index}.${zone}"
+                    create_dns_record "${zone}" "*.seat${index}" CNAME "seat${index}"
                 fi
             ;;
             remove)
