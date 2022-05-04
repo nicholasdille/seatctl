@@ -57,7 +57,7 @@ function user_main() {
             ;;
             reset)
                 local password
-                password=$(cat "${script_base_dir}/set/${name}/passwords.csv" | grep "^seat${index}." | cut -d';' -f3)
+                password=$(cat "${script_base_dir}/set/${name}/passwords.csv" | grep "^seat${index}\." | cut -d';' -f3)
                 if test -z "${password}"; then
                     error "No password found"
                     continue
@@ -66,7 +66,7 @@ function user_main() {
             ;;
             test)
                 local password
-                password=$(cat "${script_base_dir}/set/${name}/passwords.csv" | grep "^seat${index}." | cut -d';' -f3)
+                password=$(cat "${script_base_dir}/set/${name}/passwords.csv" | grep "^seat${index}\." | cut -d';' -f3)
                 if test -z "${password}"; then
                     error "No password found"
                     continue
