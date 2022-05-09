@@ -51,11 +51,11 @@ function dns_main() {
     for index in ${vm_list}; do
         info "Running on seat-${name}-${index}"
 
-        local ip
-        ip=$(jq --raw-output '.ip' "${script_base_dir}/set/${name}/seat-${name}-${index}.json")
-
         case "${command}" in
             add)
+                local ip
+                ip=$(jq --raw-output '.ip' "${script_base_dir}/set/${name}/seat-${name}-${index}.json")
+
                 if ! ${force} && exists_dns_record "${zone}" "seat${index}" A; then
                     info "DNS record for seat${index}.${zone} already exists"
                 else
@@ -91,6 +91,9 @@ function dns_main() {
                 ) | column -t
             ;;
             var)
+                local ip
+                ip=$(jq --raw-output '.ip' "${script_base_dir}/set/${name}/seat-${name}-${index}.json")
+
                 var_name=DOMAIN
                 var_value="seat${index}.${zone}"
                 echo "export ${var_name}=${var_value}" | ssh -i "${script_base_dir}/set/${name}/ssh" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR "root@${ip}" "cat >/etc/profile.d/${var_name}.sh"
