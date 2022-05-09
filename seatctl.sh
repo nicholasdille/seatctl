@@ -214,6 +214,7 @@ Commands:
   file        Transfer file with VMs
   generate    Generate password list to use with <user> subcommand
   list        List virtual machines
+  local       Add local configuration
   remove      Remove virtual machines
   run         Executes a command on the VMs
   tls         NOT IMPLEMENTED

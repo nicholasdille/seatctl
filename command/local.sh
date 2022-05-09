@@ -10,7 +10,7 @@ function local_main() {
                 command=$1
             ;;
             --help)
-                dns_help
+                local_help
                 exit 0
             ;;
             *)
