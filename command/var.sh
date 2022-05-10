@@ -40,9 +40,12 @@ function var_main() {
         exit 1
     fi
 
+    # shellcheck disable=SC2154
     for index in ${vm_list}; do
+        # shellcheck disable=SC2154
         info "Running on seat-${name}-${index}"
 
+        # shellcheck disable=SC2154
         ip=$(jq --raw-output '.ip' "${script_base_dir}/set/${name}/seat-${name}-${index}.json")
 
         echo "export ${var_name}=${var_value}" | ssh -i "${script_base_dir}/set/${name}/ssh" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR "root@${ip}" "cat >/etc/profile.d/${var_name}.sh"

@@ -32,7 +32,8 @@ function get_dns_record_id() {
     fi
     local type=$3
 
-    local id=$(get_dns_zone_id "${zone}")
+    local id
+    id=$(get_dns_zone_id "${zone}")
 
     verbose "Checking for DNS record ${name}.${zone} of type ${type}."
     curl "https://dns.hetzner.com/api/v1/records?zone_id=${id}" \
@@ -59,7 +60,8 @@ function exists_dns_record() {
     fi
 
     verbose "Checking for DNS record ${name}.${zone} of type ${type}."
-    local record="$(get_dns_record_id "${zone}" "${name}" "${type}")"
+    local record
+    record="$(get_dns_record_id "${zone}" "${name}" "${type}")"
     if test -z "${record}"; then
         verbose "Record ${name}.${zone} of type ${type} does not exist"
         return 1
@@ -91,9 +93,11 @@ function create_dns_record() {
         exit 1
     fi
 
-    local id=$(get_dns_zone_id "${zone}")
+    local id
+    id=$(get_dns_zone_id "${zone}")
 
-    local request="$(
+    local request
+    request="$(
         cat <<EOF
 {
     "zone_id": "${id}",
@@ -122,7 +126,8 @@ function remove_dns_record() {
         exit 1
     fi
 
-    local id=$(get_dns_record_id "${zone}" "${name}")
+    local id
+    id=$(get_dns_record_id "${zone}" "${name}")
 
     curl "https://dns.hetzner.com/api/v1/records/${id}" \
         --silent \
@@ -143,7 +148,8 @@ function get_dns_record() {
         exit 1
     fi
 
-    local id=$(get_dns_zone_id "${zone}")
+    local id
+    id=$(get_dns_zone_id "${zone}")
 
     curl "https://dns.hetzner.com/api/v1/records?zone_id=${id}" \
         --silent \

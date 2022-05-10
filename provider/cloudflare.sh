@@ -7,6 +7,7 @@ fi
 export CF_API_EMAIL
 export CF_API_KEY
 
+# shellcheck disable=SC2154
 FLARECTL="${script_base_dir}/bin/flarectl"
 
 function exists_dns_record() {
@@ -56,7 +57,7 @@ function create_dns_record() {
         exit 1
     fi
 
-    ${FLARECTL} dns create-or-update --zone "${zone}" --name ${name} --type "${type}" --content "${content}"
+    ${FLARECTL} dns create-or-update --zone "${zone}" --name "${name}" --type "${type}" --content "${content}"
 }
 
 function remove_dns_record() {

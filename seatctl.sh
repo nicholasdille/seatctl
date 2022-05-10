@@ -9,7 +9,7 @@ script_base_dir="$(
 )"
 
 if test -f "${script_base_dir}/.env"; then
-    # shellcheck disable=SC1090
+    # shellcheck disable=SC1090 source=.env
     source "${script_base_dir}/.env"
 fi
 
@@ -96,7 +96,7 @@ function main() {
                     error "Parameter --list cannot be used with --start and/or --count"
                 fi
             ;;
-            --log-level|-l)
+            --log-level)
                 LOG_LEVEL_ID="$(get_log_level_id "$1")"
             ;;
             --help)
@@ -158,10 +158,10 @@ function main() {
 
     if test -z "${vm_list}"; then
         if test -z "${vm_count}"; then
-            if test -d "${script_base_dir}/set/${name}" && test "$(ls ${script_base_dir}/set/${name}/seat-${name}-*.json | wc -l)" -gt 0; then
+            if test -d "${script_base_dir}/set/${name}" && test "$(find "${script_base_dir}/set/${name}" -name "seat-${name}-*.json" | wc -l)" -gt 0; then
                 ROOT_DIR=$(git rev-parse --show-toplevel)
                 vm_list=$(
-                    ls ${script_base_dir}/set/${name}/seat-${name}-*.json | \
+                    find "${script_base_dir}/set/${name}" -name "seat-${name}-*.json" | \
                         sed -E "s|${ROOT_DIR}/||" | \
                         cut -d/ -f3 | \
                         cut -d. -f1 | \

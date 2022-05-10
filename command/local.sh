@@ -31,10 +31,13 @@ function local_main() {
         exit 1
     fi
 
+    # shellcheck disable=SC2154
     for index in ${vm_list}; do
+        # shellcheck disable=SC2154
         info "Running on seat-${name}-${index}"
 
         local ip
+        # shellcheck disable=SC2154
         ip=$(jq --raw-output '.ip' "${script_base_dir}/set/${name}/seat-${name}-${index}.json")
 
         case "${command}" in

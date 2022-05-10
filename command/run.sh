@@ -54,7 +54,7 @@ function run_main() {
         fi
 
         if ${parallel}; then
-            echo "$(date +"[%Y-%m-%d %H:%M:%S]") ${command[@]}" >>"${script_base_dir}/set/${name}/seat-${name}-${index}.log"
+            echo "$(date +"[%Y-%m-%d %H:%M:%S]") ${command[*]}" >>"${script_base_dir}/set/${name}/seat-${name}-${index}.log"
             ssh -i "${script_base_dir}/set/${name}/ssh" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR "root@${ip}" -- "${command[@]}" >>"${script_base_dir}/set/${name}/seat-${name}-${index}.log" 2>&1 &
             processes+=("$!")
         else
@@ -67,9 +67,9 @@ function run_main() {
             echo -e -n "\rWaiting for background processes to finish..."
 
             count=0
-            for PID in ${processes[@]}; do
-                if ps -p ${PID} >/dev/null; then
-                    count=$(( $count + 1 ))
+            for PID in "${processes[@]}"; do
+                if ps -p "${PID}" >/dev/null; then
+                    count=$(( count + 1 ))
                 fi
             done
             echo -e -n " ${count} running"

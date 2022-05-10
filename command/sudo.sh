@@ -20,9 +20,12 @@ sudo_main() {
         shift
     done
 
+    # shellcheck disable=SC2154
     for index in ${vm_list}; do
+        # shellcheck disable=SC2154
         info "Running on seat-${name}-${index}"
 
+        # shellcheck disable=SC2154
         ip=$(jq --raw-output '.ip' "${script_base_dir}/set/${name}/seat-${name}-${index}.json")
 
         echo "seat ALL=(ALL) NOPASSWD:ALL" | ssh -i "${script_base_dir}/set/${name}/ssh" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR "root@${ip}" "cat >/etc/sudoers.d/seat"

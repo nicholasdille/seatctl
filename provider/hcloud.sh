@@ -78,6 +78,7 @@ function create_virtual_machine() {
         fi
         debug "user_data_param=${user_data_param}."
 
+        # shellcheck disable=SC2086
         ${HCLOUD} server create \
             --name "seat-${name}-${index}" \
             --location fsn1 \

@@ -57,7 +57,7 @@ function user_main() {
             ;;
             reset)
                 local password
-                password=$(cat "${script_base_dir}/set/${name}/passwords.csv" | grep "^seat${index}\." | cut -d';' -f3)
+                password=$(grep "^seat${index}\." "${script_base_dir}/set/${name}/passwords.csv" | cut -d';' -f3)
                 if test -z "${password}"; then
                     error "No password found"
                     continue
@@ -66,12 +66,12 @@ function user_main() {
             ;;
             test)
                 local password
-                password=$(cat "${script_base_dir}/set/${name}/passwords.csv" | grep "^seat${index}\." | cut -d';' -f3)
+                password=$(grep "^seat${index}\." "${script_base_dir}/set/${name}/passwords.csv" | cut -d';' -f3)
                 if test -z "${password}"; then
                     error "No password found"
                     continue
                 fi
-                if ! sshpass -p "${password}" ssh -o StrictHostKeyChecking=no -o LogLevel=Error seat@seat${index}.${zone} true; then
+                if ! sshpass -p "${password}" ssh -o StrictHostKeyChecking=no -o LogLevel=Error "seat@seat${index}.${zone}" true; then
                     error "Failed to test index ${index}"
                 fi
             ;;

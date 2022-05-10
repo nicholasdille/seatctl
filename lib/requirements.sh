@@ -4,9 +4,10 @@ function ensure_command() {
     local file="$1"
     local name="$2"
 
-    local definition="$(
-        cat "${script_base_dir}/requirements.json" | \
-            jq --raw-output --arg name "${name}" '.requirements[] | select(.name == $name)'
+    local definition
+    # shellcheck disable=SC2154
+    definition="$(
+        jq --raw-output --arg name "${name}" '.requirements[] | select(.name == $name)' "${script_base_dir}/requirements.json"
     )"
 
     local present=false
@@ -18,17 +19,21 @@ function ensure_command() {
     fi
 
     if $present; then
-        local version_command="$(echo "${definition}" | jq --raw-output '.command.version')"
-        local required_version="$(echo "${definition}" | jq --raw-output '.version')"
-        local installed_version="$(eval "${script_base_dir}/bin/${version_command}")"
-        if echo "${installed_version}" | grep --quiet ${required_version}; then
+        local version_command
+        version_command="$(echo "${definition}" | jq --raw-output '.command.version')"
+        local required_version
+        required_version="$(echo "${definition}" | jq --raw-output '.version')"
+        local installed_version
+        installed_version="$(eval "${script_base_dir}/bin/${version_command}")"
+        if echo "${installed_version}" | grep --quiet "${required_version}"; then
             verbose "+- Version matches"
             match=true
         fi
     fi
 
     if ! ${present} || ! ${match}; then
-        local install_command="$(echo "${definition}" | jq --raw-output '.command.install')"
+        local install_command
+        install_command="$(echo "${definition}" | jq --raw-output '.command.install')"
 
         verbose "+- Installing"
         (cd "${script_base_dir}/bin" && eval "${install_command}")
@@ -56,8 +61,7 @@ function process_requirements() {
     fi
 
     "${script_base_dir}/bin/yq" --output-format json eval "${file}" >"${script_base_dir}/requirements.json"
-    cat "${script_base_dir}/requirements.json" | \
-        jq --raw-output '.requirements[].name' | \
+    jq --raw-output '.requirements[].name' "${script_base_dir}/requirements.json" | \
         while read -r package; do
             verbose "Processing ${package}..."
             ensure_command "${file}" "${package}"
