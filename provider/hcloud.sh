@@ -82,7 +82,7 @@ function create_virtual_machine() {
         ${HCLOUD} server create \
             --name "seat-${name}-${index}" \
             --location fsn1 \
-            --type cx21 \
+            --type cx31 \
             --image ubuntu-20.04 \
             --ssh-key "seatctl-set-${name}" \
             ${user_data_param} \
