@@ -92,6 +92,7 @@ function tls_main() {
                     ${force_param}
             ;;
             copy)
+                run_on_seat "${name}" "${index}" mkdir /root/ssl
                 scp \
                     -i "${script_base_dir}/set/${name}/ssh" \
                     -o StrictHostKeyChecking=no \
