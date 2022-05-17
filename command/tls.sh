@@ -139,10 +139,15 @@ seatctl <global options> var <command options>
 Manage certificates.
 
 Command options:
-  --zone      XXX (required)
-  --command   XXX (required)
-  --server    XXX
-  --help      Show help
+  --zone       DNS zone for records (required)
+  --command    Sub-command to execute (required)
+  --ca         CA to use (defaults to letsencrypt)
+  --help       Show help
+
+Sub-commands:
+  get       Retrieve certificate
+  renew     Renew certificate
+  copy      Copy certificate to VM
 EOF
 }
 
