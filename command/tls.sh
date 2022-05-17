@@ -4,24 +4,29 @@ function tls_main() {
     local zone
     local command
     local server=letsencrypt
+    local sleep=300
     local force=false
 
     while test "$#" -gt 0; do
-        local parameter=$1
-        shift
-
-        case "${parameter}" in
+        case "$1" in
             --zone)
+                shift
                 zone=$1
             ;;
             --command)
+                shift
                 command=$1
             ;;
             --server)
+                shift
                 server=$1
             ;;
+            --sleep)
+                shift
+                sleep=$1
+            ;;
             --force)
-                force=$1
+                force=true
             ;;
             --help)
                 tls_help
@@ -70,7 +75,7 @@ function tls_main() {
                     --domain "seat${index}.${zone}" \
                     --domain "*.seat${index}.${zone}" \
                     --domain "*.gitlab.seat${index}.${zone}" \
-                    --dnssleep 300 \
+                    --dnssleep "${sleep}" \
                     --key-file       "${script_base_dir}/set/${name}/seat-${name}-${index}.key" \
                     --cert-file      "${script_base_dir}/set/${name}/seat-${name}-${index}.crt" \
                     --ca-file        "${script_base_dir}/set/${name}/seat-${name}-${index}.ca" \
@@ -83,7 +88,7 @@ function tls_main() {
                     --server "${server}" \
                     --dns dns_hetzner \
                     --domain "seat0.inmylab.de" \
-                    --dnssleep 300 \
+                    --dnssleep "${sleep}" \
                     ${force_param}
             ;;
             copy)
