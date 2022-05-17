@@ -63,9 +63,6 @@ function tls_main() {
         # shellcheck disable=SC2154
         info "Processing seat-${name}-${index}"
 
-        # shellcheck disable=SC2154
-        ip=$(jq --raw-output '.ip' "${script_base_dir}/set/${name}/seat-${name}-${index}.json")
-
         case "${command}" in
             get)
                 export HETZNER_Token="${HETZNER_DNS_API_TOKEN}"
@@ -92,6 +89,9 @@ function tls_main() {
                     ${force_param}
             ;;
             copy)
+                # shellcheck disable=SC2154
+                ip=$(jq --raw-output '.ip' "${script_base_dir}/set/${name}/seat-${name}-${index}.json")
+
                 run_on_seat "${name}" "${index}" mkdir /root/ssl
                 scp \
                     -i "${script_base_dir}/set/${name}/ssh" \
