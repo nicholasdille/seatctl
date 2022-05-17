@@ -103,7 +103,8 @@ function create_dns_record() {
     "zone_id": "${id}",
     "name": "${name}",
     "type": "${type}",
-    "value":"${content}"
+    "value": "${content}",
+    "ttl": "300"
 }
 EOF
     )"
