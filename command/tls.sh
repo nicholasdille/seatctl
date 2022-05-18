@@ -92,7 +92,7 @@ function tls_main() {
                 # shellcheck disable=SC2154
                 ip=$(jq --raw-output '.ip' "${script_base_dir}/set/${name}/seat-${name}-${index}.json")
 
-                run_on_seat "${name}" "${index}" mkdir /root/ssl
+                run_on_seat "${name}" "${index}" mkdir -p /root/ssl
                 scp \
                     -i "${script_base_dir}/set/${name}/ssh" \
                     -o StrictHostKeyChecking=no \

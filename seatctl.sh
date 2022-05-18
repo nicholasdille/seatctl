@@ -110,7 +110,7 @@ function main() {
             --)
                 break
             ;;
-            add|dns|file|generate|install|list|local|remove|run|tls|ssh|sudo|user|var)
+            add|dns|file|generate|install|list|local|reboot|remove|run|tls|shutdown|ssh|sudo|start|type|user|var)
                 command=${parameter}
                 if ! test -f "${script_base_dir}/command/${command}.sh"; then
                     error "Command <${command}> not found"
@@ -215,11 +215,15 @@ Commands:
   generate    Generate password list to use with <user> subcommand
   list        List virtual machines
   local       Add local configuration
+  reboot      Reboot virtual machines
   remove      Remove virtual machines
   run         Executes a command on the VMs
-  tls         NOT IMPLEMENTED
+  tls         Issue and renew certificates
+  shutdown    Shutdown virtual machines
   ssh         Enter remote shell using SSH
+  start       Power on virtual machines
   sudo        Set sudo without password for user on VM
+  type        Change type of VMs in powered off state
   user        Configure user account on VM
 EOF
 }

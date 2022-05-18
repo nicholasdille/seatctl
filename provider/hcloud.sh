@@ -82,7 +82,7 @@ function create_virtual_machine() {
         ${HCLOUD} server create \
             --name "seat-${name}-${index}" \
             --location fsn1 \
-            --type cx31 \
+            --type cx41 \
             --image ubuntu-20.04 \
             --ssh-key "seatctl-set-${name}" \
             ${user_data_param} \
@@ -128,5 +128,96 @@ function remove_virtual_machine() {
 
     if exists_virtual_machine "${name}" "${index}"; then
         ${HCLOUD} server delete "seat-${name}-${index}"
+    fi
+}
+
+function start_virtual_machine() {
+    local name=$1
+    local index=$2
+
+    if test -z "${name}"; then
+        error "Name of virtual machine must be supplied"
+        exit 1
+    fi
+    if test -z "${index}"; then
+        error "Index of virtual machine must be supplied"
+        exit 1
+    fi
+
+    if exists_virtual_machine "${name}" "${index}"; then
+        ${HCLOUD} server poweron "seat-${name}-${index}"
+    fi
+}
+
+function stop_virtual_machine() {
+    local name=$1
+    local index=$2
+
+    if test -z "${name}"; then
+        error "Name of virtual machine must be supplied"
+        exit 1
+    fi
+    if test -z "${index}"; then
+        error "Index of virtual machine must be supplied"
+        exit 1
+    fi
+
+    if exists_virtual_machine "${name}" "${index}"; then
+        ${HCLOUD} server poweroff "seat-${name}-${index}"
+    fi
+}
+
+function shutdown_virtual_machine() {
+    local name=$1
+    local index=$2
+
+    if test -z "${name}"; then
+        error "Name of virtual machine must be supplied"
+        exit 1
+    fi
+    if test -z "${index}"; then
+        error "Index of virtual machine must be supplied"
+        exit 1
+    fi
+
+    if exists_virtual_machine "${name}" "${index}"; then
+        ${HCLOUD} server shutdown "seat-${name}-${index}"
+    fi
+}
+
+function restart_virtual_machine() {
+    local name=$1
+    local index=$2
+
+    if test -z "${name}"; then
+        error "Name of virtual machine must be supplied"
+        exit 1
+    fi
+    if test -z "${index}"; then
+        error "Index of virtual machine must be supplied"
+        exit 1
+    fi
+
+    if exists_virtual_machine "${name}" "${index}"; then
+        ${HCLOUD} server reboot "seat-${name}-${index}"
+    fi
+}
+
+function change_type_virtual_machine() {
+    local name=$1
+    local index=$2
+    local type=$3
+
+    if test -z "${name}"; then
+        error "Name of virtual machine must be supplied"
+        exit 1
+    fi
+    if test -z "${index}"; then
+        error "Index of virtual machine must be supplied"
+        exit 1
+    fi
+
+    if exists_virtual_machine "${name}" "${index}"; then
+        ${HCLOUD} server change-type "seat-${name}-${index}" "${type}"
     fi
 }

@@ -104,7 +104,7 @@ function create_dns_record() {
     "name": "${name}",
     "type": "${type}",
     "value": "${content}",
-    "ttl": "300"
+    "ttl": 300
 }
 EOF
     )"

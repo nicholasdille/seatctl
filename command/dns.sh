@@ -94,7 +94,7 @@ function dns_main() {
                 local ip
                 ip=$(jq --raw-output '.ip' "${script_base_dir}/set/${name}/seat-${name}-${index}.json")
 
-                echo "export domain=seat${index}.${zone}" | ssh -i "${script_base_dir}/set/${name}/ssh" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR "root@${ip}" "cat >/etc/profile.d/domain.sh"
+                echo "export DOMAIN=seat${index}.${zone}" | ssh -i "${script_base_dir}/set/${name}/ssh" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR "root@${ip}" "cat >/etc/profile.d/domain.sh"
                 echo "export IP=${ip}" | ssh -i "${script_base_dir}/set/${name}/ssh" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR "root@${ip}" "cat >/etc/profile.d/ip.sh"
             ;;
         esac
