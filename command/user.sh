@@ -111,9 +111,10 @@ Sub-commands:
   add       Create user account
   remove    Remove user account
   lock      Lock user account (deny login)
-  unlock    Unlock user account (allow login)
   reset     Reset password
   test      Test authentication
+  unlock    Unlock user account (allow login)
+  var       Create seat specific variables
 EOF
 }
 

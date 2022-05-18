@@ -143,6 +143,8 @@ Command options:
   --zone       DNS zone for records (required)
   --command    Sub-command to execute (required)
   --ca         CA to use (defaults to letsencrypt)
+  --sleep      How long to wait for DNS challenge (default: 300)
+  --force      Issue certificate even if renew is not necessary
   --help       Show help
 
 Sub-commands:
