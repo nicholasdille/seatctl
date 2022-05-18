@@ -15,7 +15,7 @@ function local_main() {
             ;;
             *)
                 error "Wrong parameters"
-                dns_help
+                local_help
                 exit 1
             ;;
         esac
@@ -27,7 +27,7 @@ function local_main() {
 
     if test -z "${command}"; then
         error "Command not specified"
-        dns_help
+        local_help
         exit 1
     fi
 
