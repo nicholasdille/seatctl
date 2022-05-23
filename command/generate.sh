@@ -1,5 +1,21 @@
 #!/bin/bash
 
+function generate_code() {
+    local chars=(A B C D E F G H J K L M N P Q R S T U V W X Y Z 2 3 4 5 6 7 8 9)
+    local length=6
+
+    local max="${#chars[*]}"
+
+    local code=""
+    while test "${length}" -gt 0; do
+        code="${code}${chars[$((RANDOM % max))]}"
+
+        length=$((length - 1))
+    done
+
+    echo -n "${code}"
+}
+
 function generate_main() {
     local zone
     local length=32
@@ -35,13 +51,16 @@ function generate_main() {
         exit 1
     fi
 
-    echo "hostname;username;password"
+    echo "code;hostname;username;password"
     # shellcheck disable=SC2154
     for index in ${vm_list}; do
+        local code
+        code="$(generate_code)"
+
         local password
         password=$(openssl rand -hex "${length}")
 
-        echo "seat${index}.${zone};seat;${password}"
+        echo "${code};seat${index}.${zone};seat;${password}"
     done
 
     exit 0
