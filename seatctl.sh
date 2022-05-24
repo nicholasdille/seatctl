@@ -110,7 +110,7 @@ function main() {
             --)
                 break
             ;;
-            add|dns|file|generate|install|list|local|reboot|remove|run|tls|shutdown|ssh|sudo|start|type|user|var)
+            add|codes|dns|file|generate|install|list|local|reboot|remove|run|tls|shutdown|ssh|sudo|start|type|user|var)
                 command=${parameter}
                 if ! test -f "${script_base_dir}/command/${command}.sh"; then
                     error "Command <${command}> not found"

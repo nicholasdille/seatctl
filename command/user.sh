@@ -57,7 +57,7 @@ function user_main() {
             ;;
             reset)
                 local password
-                password=$(grep "^seat${index}\." "${script_base_dir}/set/${name}/passwords.csv" | cut -d';' -f3)
+                password=$(grep ";seat${index}\." "${script_base_dir}/set/${name}/passwords.csv" | cut -d';' -f4)
                 if test -z "${password}"; then
                     error "No password found"
                     continue
@@ -66,7 +66,7 @@ function user_main() {
             ;;
             test)
                 local password
-                password=$(grep "^seat${index}\." "${script_base_dir}/set/${name}/passwords.csv" | cut -d';' -f3)
+                password=$(grep ";seat${index}\." "${script_base_dir}/set/${name}/passwords.csv" | cut -d';' -f4)
                 if test -z "${password}"; then
                     error "No password found"
                     continue
@@ -83,7 +83,7 @@ function user_main() {
                 # shellcheck disable=SC2154
                 ip=$(jq --raw-output '.ip' "${script_base_dir}/set/${name}/seat-${name}-${index}.json")
                 local password
-                password=$(grep "^seat${index}\." "${script_base_dir}/set/${name}/passwords.csv" | cut -d';' -f3)
+                password=$(grep ";seat${index}\." "${script_base_dir}/set/${name}/passwords.csv" | cut -d';' -f4)
                 local var_value
                 var_value="$(htpasswd -nbB seat "${password}" | sed -e 's/\$/\\\$/g')"
                 echo "export SEAT_HTPASSWD=${var_value}" | ssh -i "${script_base_dir}/set/${name}/ssh" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR "root@${ip}" "cat >/etc/profile.d/seat_htpasswd.sh"

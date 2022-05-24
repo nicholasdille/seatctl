@@ -51,7 +51,8 @@ function generate_main() {
         exit 1
     fi
 
-    echo "code;hostname;username;password"
+    mkdir -p "${script_base_dir}/set/${name}"
+    echo "code;hostname;username;password" >"${script_base_dir}/set/${name}/passwords.csv"
     # shellcheck disable=SC2154
     for index in ${vm_list}; do
         local code
@@ -60,7 +61,7 @@ function generate_main() {
         local password
         password=$(openssl rand -hex "${length}")
 
-        echo "${code};seat${index}.${zone};seat;${password}"
+        echo "${code};seat${index}.${zone};seat;${password}" >>"${script_base_dir}/set/${name}/passwords.csv"
     done
 
     exit 0
