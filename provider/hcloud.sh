@@ -83,7 +83,7 @@ function create_virtual_machine() {
             --name "seat-${name}-${index}" \
             --location fsn1 \
             --type cx41 \
-            --image ubuntu-20.04 \
+            --image ubuntu-22.04 \
             --ssh-key "seatctl-set-${name}" \
             ${user_data_param} \
             --label seatctl-set="${name}" \
