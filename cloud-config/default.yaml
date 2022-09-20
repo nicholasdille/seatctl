@@ -29,9 +29,8 @@ packages:
 runcmd:
 - sed -i 's/GRUB_CMDLINE_LINUX=""/GRUB_CMDLINE_LINUX="systemd.unified_cgroup_hierarchy=1"/' /etc/default/grub
 - update-grub
-- curl -sLo /usr/local/bin/docker-setup https://github.com/nicholasdille/docker-setup/releases/latest/download/docker-setup.sh
+- curl -sLo /usr/local/bin/docker-setup https://github.com/nicholasdille/docker-setup/raw/main/docker-setup
 - chmod +x /usr/local/bin/docker-setup
-- docker-setup --plan
 
 power_state:
   mode: reboot
