@@ -110,7 +110,7 @@ function main() {
             --)
                 break
             ;;
-            add|codes|dns|file|generate|install|list|local|reboot|remove|run|tls|shutdown|ssh|sudo|start|type|user|var)
+            add|codes|dns|file|generate|install|list|local|reboot|remove|run|tls|shutdown|ssh|sudo|start|type|user|var|wait)
                 command=${parameter}
                 if ! test -f "${script_base_dir}/command/${command}.sh"; then
                     error "Command <${command}> not found"
@@ -225,6 +225,7 @@ Commands:
   sudo        Set sudo without password for user on VM
   type        Change type of VMs in powered off state
   user        Configure user account on VM
+  wait        Wait for SSH to be available on VM
 EOF
 }
 
