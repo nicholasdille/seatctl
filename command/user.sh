@@ -85,6 +85,7 @@ function user_main() {
                 local password
                 password=$(grep ";seat${index}\." "${script_base_dir}/set/${name}/passwords.csv" | cut -d';' -f4)
                 local var_value
+                echo "export SEAT_PASS=${password}" | ssh -i "${script_base_dir}/set/${name}/ssh" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR "root@${ip}" "cat >/etc/profile.d/seat_pass.sh"
                 var_value="$(htpasswd -nbB seat "${password}" | sed -e 's/\$/\\\$/g')"
                 echo "export SEAT_HTPASSWD=${var_value}" | ssh -i "${script_base_dir}/set/${name}/ssh" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR "root@${ip}" "cat >/etc/profile.d/seat_htpasswd.sh"
                 var_value="$(htpasswd -nbB seat "${password}" | sed -e 's/\$/\\\$/g' | cut -d: -f2)"
