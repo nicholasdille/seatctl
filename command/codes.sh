@@ -34,6 +34,8 @@ function codes_main() {
         exit 1
     fi
 
+    info "Creating codes in ${target}"
+
     # shellcheck disable=SC2154
     for index in ${vm_list}; do
         info "Running on seat-${name}-${index}"
