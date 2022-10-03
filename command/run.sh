@@ -58,7 +58,7 @@ function run_main() {
             ssh -i "${script_base_dir}/set/${name}/ssh" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR "root@${ip}" -- "${command[@]}" >>"${script_base_dir}/set/${name}/seat-${name}-${index}.log" 2>&1 &
             processes+=("$!")
         else
-            ssh -i "${script_base_dir}/set/${name}/ssh" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR "root@${ip}" -- "${command[@]}"
+            ssh -i "${script_base_dir}/set/${name}/ssh" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR "root@${ip}" -- "${command[@]}" || true
         fi
     done
 
