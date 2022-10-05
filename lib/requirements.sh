@@ -53,6 +53,7 @@ function process_requirements() {
     fi
 
     if ! test -f "${script_base_dir}/bin/yq"; then
+        mkdir -p "${script_base_dir}/bin"
         curl https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 \
             --silent \
             --location \

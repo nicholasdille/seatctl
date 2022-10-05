@@ -38,6 +38,11 @@ function user_main() {
         exit 1
     fi
 
+    if ! type htpasswd >/dev/null 2>&1; then
+        error "Missing htpasswd"
+        exit 1
+    fi
+
     # shellcheck disable=SC2154
     for index in ${vm_list}; do
         info "Running on seat-${name}-${index}"

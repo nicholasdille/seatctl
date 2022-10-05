@@ -53,6 +53,11 @@ function tls_main() {
         exit 1
     fi
 
+    if ! test -d "${HOME}/.acme.sh"; then
+        error "Missing acme.sh in home directory"
+        exit 1
+    fi
+
     force_param=
     if ${force}; then
         force_param=--force

@@ -45,6 +45,7 @@ function run_main() {
 
     processes=()
     # shellcheck disable=SC2154
+    return_code=0
     for index in ${vm_list}; do
         info "Running on seat-${name}-${index}"
         ip=$(jq --raw-output '.ip' "${script_base_dir}/set/${name}/seat-${name}-${index}.json")
@@ -58,7 +59,9 @@ function run_main() {
             ssh -i "${script_base_dir}/set/${name}/ssh" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR "root@${ip}" -- "${command[@]}" >>"${script_base_dir}/set/${name}/seat-${name}-${index}.log" 2>&1 &
             processes+=("$!")
         else
-            ssh -i "${script_base_dir}/set/${name}/ssh" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR "root@${ip}" -- "${command[@]}" || true
+            if ! ssh -i "${script_base_dir}/set/${name}/ssh" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR "root@${ip}" -- "${command[@]}"; then
+                return_code=1
+            fi
         fi
     done
 
@@ -82,7 +85,7 @@ function run_main() {
         echo
     fi
 
-    exit 0
+    exit "${return_code}"
 }
 
 run_help() {
