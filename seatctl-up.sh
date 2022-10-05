@@ -35,6 +35,9 @@ if test "${COUNT}" -gt 1; then
         echo -n -e "\rRunning ${running_pids} deployment(s)..."
     done
     echo
+
+    ./seatctl.sh "$@" local --command ssh
+    #./seatctl.sh "$@" user --command test --zone inmylab.de
     exit
 fi
 
@@ -70,7 +73,10 @@ echo "### Setting up user and variables for seat ${START}"
 if ! ./seatctl.sh "$@" run -- grep -q seat /etc/passwd; then
     ./seatctl.sh "$@" user --command add
 fi
+./seatctl.sh "$@" user --command reset
 ./seatctl.sh "$@" user --command lock
+./seatctl.sh "$@" user --command sudo
+./seatctl.sh "$@" user --command docker-group
 ./seatctl.sh "$@" user --command var
 ./seatctl.sh "$@" dns --command var --zone "${ZONE}"
 

@@ -42,6 +42,10 @@ function user_main() {
         error "Missing htpasswd"
         exit 1
     fi
+    if ! type sshpass >/dev/null 2>&1; then
+        error "Missing sshpass"
+        exit 1
+    fi
 
     # shellcheck disable=SC2154
     for index in ${vm_list}; do
