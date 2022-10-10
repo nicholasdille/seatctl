@@ -31,6 +31,7 @@ function wait_main() {
         ip=$(jq --raw-output '.ip' "${script_base_dir}/set/${name}/seat-${name}-${index}.json")
         info "Waiting for SSH to be available on VM ${index}..."
         while ! ssh -i "${script_base_dir}/set/${name}/ssh" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR "root@${ip}" -- true; do
+            info "Waiting for SSH to be available on VM ${index}..."
             sleep 10
         done
     done
