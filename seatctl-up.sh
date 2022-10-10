@@ -63,7 +63,7 @@ fi
 echo
 echo "### Waiting for cloud-init to finish for seat ${START}"
 ./seatctl.sh "$@" wait
-./seatctl.sh "$@" run -- cloud-init status --wait
+./seatctl.sh "$@" run -- cloud-init status --wait || true
 ./seatctl.sh "$@" wait
 ./seatctl.sh "$@" run -- "while test -f /var/run/reboot-required; do sleep 10; done"
 ./seatctl.sh "$@" wait
