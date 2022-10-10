@@ -8,7 +8,7 @@ ZONE=$4
 DIR=$5
 
 if test -z "${NAME}" || test -z "${START}" || test -z "${COUNT}" || test -z "${ZONE}"; then
-    echo "Usage: $0 <name> <start> <count> <zone>"
+    echo "Usage: $0 <name> <start> <count> <zone> [<dir>]"
     exit 1
 fi
 
@@ -56,7 +56,7 @@ echo "### Setting up infrastructure for seat ${START}"
 echo
 echo "### Setting up certificate for seat ${START}"
 if ! test -f "set/${NAME}/seat-${NAME}-${START}.key"; then
-    ./seatctl.sh "$@" tls --zone "${ZONE}" --command get --sleep 10
+    ./seatctl.sh "$@" tls --zone "${ZONE}" --command get --sleep 10 --force
     ./seatctl.sh "$@" tls --zone "${ZONE}" --command copy
 fi
 
@@ -67,6 +67,15 @@ echo "### Waiting for cloud-init to finish for seat ${START}"
 ./seatctl.sh "$@" wait
 ./seatctl.sh "$@" run -- "while test -f /var/run/reboot-required; do sleep 10; done"
 ./seatctl.sh "$@" wait
+
+echo
+echo "### Setting up tools for seat ${START}"
+if ! ./seatctl.sh "$@" run -- docker version >/dev/null 2>&1; then
+    ./seatctl.sh "$@" run -- update-alternatives --set iptables /usr/sbin/iptables-legacy
+    ./seatctl.sh "$@" run -- docker-setup update
+    ./seatctl.sh "$@" run -- docker-setup upgrade
+    ./seatctl.sh "$@" run -- docker-setup --default install
+fi
 
 echo
 echo "### Setting up user and variables for seat ${START}"
@@ -81,15 +90,6 @@ fi
 ./seatctl.sh "$@" dns --command var --zone "${ZONE}"
 
 echo
-echo "### Setting up tools for seat ${START}"
-if ! ./seatctl.sh "$@" run -- docker version >/dev/null 2>&1; then
-    ./seatctl.sh "$@" run -- update-alternatives --set iptables /usr/sbin/iptables-legacy
-    ./seatctl.sh "$@" run -- docker-setup update
-    ./seatctl.sh "$@" run -- docker-setup upgrade
-    ./seatctl.sh "$@" run -- docker-setup --default install
-fi
-
-echo
 echo "### Setting up repository for seat ${START}"
 if ! ./seatctl.sh "$@" run -- test -d container-slides; then
     ./seatctl.sh "$@" run -- git clone https://github.com/nicholasdille/container-slides
@@ -100,7 +100,7 @@ fi
 if test -n "${DIR}"; then
     echo
     echo "### Starting deployment for seat ${START}"
-    ./seatctl.sh "$@" run -- container-slides/160_gitlab_ci/000_rollout/bootstrap.sh
+    ./seatctl.sh "$@" run -- container-slides/${DIR}/bootstrap.sh
     exit 0
 fi
 
