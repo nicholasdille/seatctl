@@ -40,7 +40,19 @@ while test "${INDEX}" -lt "${COUNT}"; do
         echo -e -n ";${failure}"
     fi
 
-    if ssh -i set/${NAME}/ssh -o ConnectTimeout=1 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR root@${IP} true; then
+    if test -f "set/${NAME}/seat-${NAME}-${SEAT_INDEX}.key"; then
+        echo -e -n ";${success}"
+    else
+        echo -e -n ";${failure}"
+    fi
+
+    if ssh -i set/${NAME}/ssh -o ConnectTimeout=2 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR root@${IP} true; then
+        echo -e -n ";${success}"
+    else
+        echo -e -n ";${failure}"
+    fi
+
+    if ssh -i set/workshop1013/ssh -o ConnectTimeout=2 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR root@167.235.198.17 test -f ssl/seat.key; then
         echo -e -n ";${success}"
     else
         echo -e -n ";${failure}"
@@ -80,4 +92,4 @@ while test "${INDEX}" -lt "${COUNT}"; do
 
     INDEX=$(( INDEX + 1 ))
 done \
-| column --table --separator ';' --table-columns 'Seat,DNS1,DNS2,SSH,traefik,info,gitlab,vscode,runner'
+| column --table --separator ';' --table-columns 'Seat,DNS1,DNS2,CRT1,SSH,CRT2,traefik,info,gitlab,vscode,runner'
