@@ -52,7 +52,7 @@ while test "${INDEX}" -lt "${COUNT}"; do
         echo -e -n ";${failure}"
     fi
 
-    if ssh -i set/workshop1013/ssh -o ConnectTimeout=2 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR root@167.235.198.17 test -f ssl/seat.key; then
+    if ssh -i set/${NAME}/ssh -o ConnectTimeout=2 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR root@${IP} test -f ssl/seat.key; then
         echo -e -n ";${success}"
     else
         echo -e -n ";${failure}"
@@ -76,12 +76,6 @@ while test "${INDEX}" -lt "${COUNT}"; do
         echo -e -n ";${failure}"
     fi
 
-    if test "$(curl -so /dev/null -w "%{http_code}" https://vscode.${DOMAIN})" == "401"; then
-        echo -e -n ";${success}"
-    else
-        echo -e -n ";${failure}"
-    fi
-
     if test "$(ssh -i set/${NAME}/ssh -o ConnectTimeout=1 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR root@${IP} bash --login -c "\"docker compose --project-directory container-slides/160_gitlab_ci/000_rollout ps --format json 2>&1\"" | grep -v "level=warning" | jq --raw-output '.[] | select(.Service == "runner") | .State')" == "running"; then
         echo -e -n ";${success}"
     else
@@ -92,4 +86,4 @@ while test "${INDEX}" -lt "${COUNT}"; do
 
     INDEX=$(( INDEX + 1 ))
 done \
-| column --table --separator ';' --table-columns 'Seat,DNS1,DNS2,CRT1,SSH,CRT2,traefik,info,gitlab,vscode,runner'
+| column --table --separator ';' --table-columns 'Seat,DNS1,DNS2,CRT1,SSH,CRT2,traefik,info,gitlab,runner'
