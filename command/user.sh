@@ -39,11 +39,11 @@ function user_main() {
     fi
 
     if ! type htpasswd >/dev/null 2>&1; then
-        error "Missing htpasswd"
+        error "Missing tool htpasswd"
         exit 1
     fi
     if ! type sshpass >/dev/null 2>&1; then
-        error "Missing sshpass"
+        error "Missing tool sshpass"
         exit 1
     fi
 
