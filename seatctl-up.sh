@@ -74,8 +74,6 @@ if ! ./seatctl.sh "$@" run -- docker version >/dev/null 2>&1; then
     ./seatctl.sh "$@" run -- update-alternatives --set iptables /usr/sbin/iptables-legacy
     ./seatctl.sh "$@" run -- docker-setup update
     ./seatctl.sh "$@" run -- docker-setup upgrade
-    # Workaround for https://github.com/nicholasdille/docker-setup/issues/5502
-    ./seatctl.sh "$@" run -- docker-setup --tools=containerd install
     ./seatctl.sh "$@" run -- docker-setup --default install
 fi
 
