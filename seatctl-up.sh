@@ -57,8 +57,8 @@ echo
 echo "### Setting up certificate for seat ${START}"
 if ! test -f "set/${NAME}/seat-${NAME}-${START}.key"; then
     ./seatctl.sh "$@" tls --zone "${ZONE}" --command get --sleep 10 --force
-    ./seatctl.sh "$@" tls --zone "${ZONE}" --command copy
 fi
+./seatctl.sh "$@" tls --zone "${ZONE}" --command copy
 
 echo
 echo "### Waiting for cloud-init to finish for seat ${START}"
