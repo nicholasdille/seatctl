@@ -54,19 +54,19 @@ echo "### Setting up infrastructure for seat ${START}"
 ./seatctl.sh "$@" dns --command add --zone "${ZONE}"
 
 echo
-echo "### Setting up certificate for seat ${START}"
-if ! test -f "set/${NAME}/seat-${NAME}-${START}.key"; then
-    ./seatctl.sh "$@" tls --zone "${ZONE}" --command get --sleep 10 --force
-fi
-./seatctl.sh "$@" tls --zone "${ZONE}" --command copy
-
-echo
 echo "### Waiting for cloud-init to finish for seat ${START}"
 ./seatctl.sh "$@" wait
 ./seatctl.sh "$@" run -- cloud-init status --wait || true
 ./seatctl.sh "$@" wait
 ./seatctl.sh "$@" run -- "while test -f /var/run/reboot-required; do sleep 10; done"
 ./seatctl.sh "$@" wait
+
+echo
+echo "### Setting up certificate for seat ${START}"
+if ! test -f "set/${NAME}/seat-${NAME}-${START}.key"; then
+    ./seatctl.sh "$@" tls --zone "${ZONE}" --command get --sleep 10 --force
+fi
+./seatctl.sh "$@" tls --zone "${ZONE}" --command copy
 
 echo
 echo "### Setting up tools for seat ${START}"
