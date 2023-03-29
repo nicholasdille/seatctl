@@ -55,6 +55,7 @@ echo "### Setting up infrastructure for seat ${START}"
 
 echo
 echo "### Waiting for cloud-init to finish for seat ${START}"
+sleep 30
 ./seatctl.sh "$@" wait
 ./seatctl.sh "$@" run -- cloud-init status --wait || true
 ./seatctl.sh "$@" wait
