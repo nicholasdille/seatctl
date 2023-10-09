@@ -29,8 +29,9 @@ packages:
 runcmd:
 - sed -i 's/GRUB_CMDLINE_LINUX=""/GRUB_CMDLINE_LINUX="systemd.unified_cgroup_hierarchy=1"/' /etc/default/grub
 - update-grub
-- curl -sLo /usr/local/bin/docker-setup https://github.com/nicholasdille/docker-setup/raw/main/docker-setup
-- chmod +x /usr/local/bin/docker-setup
+- curl -sSLfo /tmp/uniget_Linux_x86_64.tar.gz https://github.com/uniget-org/cli/releases/latest/download/uniget_Linux_x86_64.tar.gz
+- tar -xzf /tmp/uniget_Linux_x86_64.tar.gz -C /usr/local/bin uniget
+- rm -f /tmp/uniget_Linux_x86_64.tar.gz
 
 power_state:
   mode: reboot

@@ -73,9 +73,9 @@ echo
 echo "### Setting up tools for seat ${START}"
 if ! ./seatctl.sh "$@" run -- docker version >/dev/null 2>&1; then
     ./seatctl.sh "$@" run -- update-alternatives --set iptables /usr/sbin/iptables-legacy
-    ./seatctl.sh "$@" run -- docker-setup update
-    ./seatctl.sh "$@" run -- docker-setup upgrade
-    ./seatctl.sh "$@" run -- docker-setup --default install
+    ./seatctl.sh "$@" run -- uniget update
+    ./seatctl.sh "$@" run -- uniget self-upgrade
+    ./seatctl.sh "$@" run -- uniget install --default
 fi
 
 echo
