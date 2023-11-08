@@ -15,3 +15,8 @@ variable user {
   type = string
   default = "seat"
 }
+
+variable seat_count {
+  type = number
+  default = 1
+}

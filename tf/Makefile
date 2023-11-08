@@ -10,14 +10,6 @@ clean:
 	@rm -rf plan.out terraform.tfstate* ssh ssh.pub .terraform*
 
 .PHONY:
-show:
-	@terraform show
-
-.PHONY:
-output:
-	@terraform output
-
-.PHONY:
 init: .terraform.lock.hcl
 
 .PHONY:
@@ -42,6 +34,7 @@ plan.out: *.tf .terraform.lock.hcl
 	$(TERRAFORM_WITH_BACKEND) plan \
 		-out=plan.out \
 		-var="name=$(STATE_NAME)" \
+		-var="seat_count=2" \
 		-var="hcloud_token=$(HCLOUD_TOKEN)" \
 		-var="hetznerdns_token=$(HETZNERDNS_TOKEN)"
 
@@ -58,6 +51,12 @@ destroy:
 		-auto-approve \
 		-state=terraform.tfstate \
 		-var="name=$(STATE_NAME)" \
+		-var="seat_count=2" \
 		-var="hcloud_token=$(HCLOUD_TOKEN)" \
 		-var="hetznerdns_token=$(HETZNERDNS_TOKEN)"
 	@rm -f terraform.tfstate*
+
+.PHONY:
+output:
+	@\
+	$(TERRAFORM_WITH_BACKEND) output

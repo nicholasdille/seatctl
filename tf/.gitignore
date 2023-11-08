@@ -1,5 +1,6 @@
 .env.mk
 git_http_backend.auto.tf
+seats.json
 ssh
 ssh.pub
 .terraform
