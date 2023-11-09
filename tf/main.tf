@@ -110,7 +110,7 @@ resource "acme_certificate" "certificate" {
     [for k, vm in hcloud_server.vm : "${vm.name}.${local.domain}"],
     [for k, vm in hcloud_server.vm : "*.${vm.name}.${local.domain}"]
   )
-
+  
   dns_challenge {
     provider = "hetzner"
 
@@ -181,6 +181,11 @@ resource "remote_file" "tls_chain" {
 }
 
 resource "remote_file" "vars" {
+  depends_on = [
+    remote_file.tls_key,
+    remote_file.tls_crt,
+    remote_file.tls_chain
+  ]
   count = local.seat_count
 
   conn {
@@ -209,17 +214,34 @@ EOF
   permissions = "0755"
 }
 
-#resource "remote_file" "bootstrap_sh" {
-#  count = local.seat_count
-#
-#  conn {
-#    host        = hcloud_server.vm[count.index].ipv4_address
-#    port        = 22
-#    user        = "root"
-#    private_key = tls_private_key.ssh_private_key.private_key_openssh
-#  }
-#
-#  path        = "/opt/bootstrap.sh"
-#  content = file("bootstrap.sh")
-#  permissions = "0700"
-#}
+resource "remote_file" "bootstrap_sh" {
+  depends_on = [
+    remote_file.vars
+  ]
+  count = local.seat_count
+
+  conn {
+    host        = hcloud_server.vm[count.index].ipv4_address
+    port        = 22
+    user        = "root"
+    private_key = tls_private_key.ssh_private_key.private_key_openssh
+  }
+
+  path        = "/opt/bootstrap.sh"
+  content = <<EOF
+#!/bin/bash
+set -o errexit -o pipefail
+
+if test -d ~/container-slides; then
+    git -C ~/container-slides pull --all
+else
+    git clone https://github.com/nicholasdille/container-slides ~/container-slides
+fi
+
+cd ~/container-slides/${local.config.bootstrap_directory}
+pwd
+ls -l
+#bash bootstrap.sh
+EOF
+  permissions = "0700"
+}
