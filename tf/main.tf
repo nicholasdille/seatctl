@@ -259,6 +259,6 @@ resource "ssh_resource" "bootstrap" {
   timeout = "10m"
   retry_delay = "5s"
   commands = [
-    remote_file.bootstrap_sh.path
+    remote_file.bootstrap_sh[count.index].path
   ]
 }
