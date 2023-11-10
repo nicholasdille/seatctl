@@ -203,13 +203,14 @@ export IP="${hcloud_server.vm[count.index].ipv4_address}"
 export SEAT_USER="${var.name}"
 export SEAT_PASS="${local.config.seats[count.index].password}"
 export SEAT_CODE="${local.config.seats[count.index].code}"
-export SEAT_HTPASSWD="$(htpasswd -nbB seat "$${SEAT_PASS}" | sed -e 's/\$/\\\$/g')"
+export SEAT_HTPASSWD="$(htpasswd -nbB seat "$${SEAT_PASS}")"
 export SEAT_HTPASSWD_ONLY="$(echo "$${SEAT_HTPASSWD}" | cut -d: -f2)"
-export SEAT_CODE_HTPASSWD="$(htpasswd -nbB seat "$${SEAT_CODE}" | sed -e 's/\$/\\\$/g')"
+export SEAT_CODE_HTPASSWD="$(htpasswd -nbB seat "$${SEAT_CODE}")"
 export WEBDAV_PASS_DEV="${local.config.seats[count.index].webdav_pass_dev}"
 export WEBDAV_PASS_LIVE="${local.config.seats[count.index].webdav_pass_live}"
 export GITLAB_ADMIN_PASS="${local.config.gitlab_admin_password}"
 export GITLAB_ADMIN_TOKEN="${local.config.gitlab_admin_token}"
+export SEAT_GITLAB_TOKEN="${local.config.seats[count.index].gitlab_token}"
 EOF
   permissions = "0755"
 }
@@ -239,9 +240,25 @@ else
 fi
 
 cd ~/container-slides/${local.config.bootstrap_directory}
-pwd
-ls -l
-#bash bootstrap.sh
+bash bootstrap.sh
 EOF
   permissions = "0700"
+}
+
+resource "ssh_resource" "bootstrap" {
+  depends_on = [
+    remote_file.vars,
+    remote_file.bootstrap_sh
+  ]
+  count = local.seat_count
+
+  when = "create"
+  host = hcloud_server.vm[count.index].ipv4_address
+  user = "root"
+  private_key = tls_private_key.ssh_private_key.private_key_openssh
+  timeout = "10m"
+  retry_delay = "5s"
+  commands = [
+    remote_file.bootstrap_sh.path
+  ]
 }
