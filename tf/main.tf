@@ -233,6 +233,10 @@ resource "remote_file" "bootstrap_sh" {
 #!/bin/bash
 set -o errexit -o pipefail
 
+if test -f /opt/bootstrapped; then
+    exit
+fi
+
 if test -d ~/container-slides; then
     git -C ~/container-slides pull --all
 else
@@ -241,12 +245,16 @@ fi
 
 cd ~/container-slides/${local.config.bootstrap_directory}
 bash bootstrap.sh
+
+touch /opt/bootstrapped
 EOF
   permissions = "0700"
 }
 
 resource "ssh_resource" "bootstrap" {
   depends_on = [
+    hetznerdns_record.main,
+    hetznerdns_record.wildcard,
     remote_file.vars,
     remote_file.bootstrap_sh
   ]
@@ -256,7 +264,7 @@ resource "ssh_resource" "bootstrap" {
   host = hcloud_server.vm[count.index].ipv4_address
   user = "root"
   private_key = tls_private_key.ssh_private_key.private_key_openssh
-  timeout = "10m"
+  timeout = "30m"
   retry_delay = "5s"
   commands = [
     remote_file.bootstrap_sh[count.index].path
