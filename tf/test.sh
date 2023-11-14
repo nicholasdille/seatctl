@@ -74,6 +74,17 @@ for INDEX in $(seq 0 $((COUNT - 1))); do
         continue
     fi
 
+    RUNNER_COUNT="$(
+        curl -sSfH "Private-Token: ${SEAT_TOKEN}" "https://gitlab.${NAME}.${DOMAIN}/api/v4/runners/all" \
+        | jq --raw-output '. | length'
+    )"
+    if test "${RUNNER_COUNT}" -gt 0; then
+        echo -n " Runner${OK}"
+    else
+        echo " Runner${NOT_OK}"
+        continue
+    fi
+
     PROJECT="$(
         curl -sSfH "Private-Token: ${SEAT_TOKEN}" https://gitlab.${NAME}.${DOMAIN}/api/v4/projects \
         | jq --raw-output '.[].name_with_namespace'
