@@ -58,6 +58,11 @@ while test "${INDEX}" -lt "${COUNT}"; do
         echo -e -n ";${failure}"
     fi
 
+    # ssh user
+    # sudo
+    # docker
+
+    # delegate tests to directory?!
     if test "$(curl -so /dev/null -w "%{http_code}" https://traefik.${DOMAIN})" == "401"; then
         echo -e -n ";${success}"
     else

@@ -90,7 +90,7 @@ if ! ./seatctl.sh "$@" run -- grep -q seat /etc/passwd; then
 fi
 ./seatctl.sh "$@" user --command reset
 ./seatctl.sh "$@" user --command lock
-./seatctl.sh "$@" user --command sudo
+./seatctl.sh "$@" sudo
 ./seatctl.sh "$@" user --command docker-group
 ./seatctl.sh "$@" user --command var
 ./seatctl.sh "$@" dns --command var --zone "${ZONE}"

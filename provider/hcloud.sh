@@ -137,9 +137,9 @@ function create_virtual_machine() {
         # shellcheck disable=SC2086
         ${HCLOUD} server create \
             --name "seat-${name}-${index}" \
-            --location hel1 \
+            --location fsn1 \
             --type cx42 \
-            --image ubuntu-22.04 \
+            --image ubuntu-24.04 \
             --ssh-key "seatctl-set-${name}" \
             ${user_data_param} \
             --label seatctl-set="${name}" \
