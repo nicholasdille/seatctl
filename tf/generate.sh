@@ -87,3 +87,10 @@ cat seats.json \
         "\nHost seat\(.index).inmylab.de\nUser seat\nCode \(.code)\nPassword \(.password)"
     ' \
 >seats.txt
+
+cat seats.json \
+| jq --raw-output '
+        .seats[] |
+        "Username: seat\(.index)\nCode: \(.code)\n"
+    ' \
+>seat-codes.txt

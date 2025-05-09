@@ -2,6 +2,7 @@
 git_http_backend.auto.tf
 seats.json
 seats.txt
+seat-codes.txt
 ssh
 ssh.pub
 .terraform
