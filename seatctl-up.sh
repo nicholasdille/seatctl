@@ -48,14 +48,17 @@ if ! test -f "set/${NAME}/passwords.csv"; then
 fi
 
 echo
+echo "#################################################"
 echo "### Setting up infrastructure for seat ${START}"
+echo "#################################################"
 ./seatctl.sh "$@" add
 ./seatctl.sh "$@" wait
 ./seatctl.sh "$@" dns --command add --zone "${ZONE}"
 
 echo
+echo "#################################################"
 echo "### Waiting for cloud-init to finish for seat ${START}"
-sleep 30
+echo "#################################################"
 ./seatctl.sh "$@" wait
 ./seatctl.sh "$@" run -- cloud-init status --wait || true
 ./seatctl.sh "$@" wait
@@ -63,14 +66,18 @@ sleep 30
 ./seatctl.sh "$@" wait
 
 echo
+echo "#################################################"
 echo "### Setting up certificate for seat ${START}"
+echo "#################################################"
 if ! test -f "set/${NAME}/seat-${NAME}-${START}.key"; then
     ./seatctl.sh "$@" tls --zone "${ZONE}" --command get --sleep 10 --force
 fi
 ./seatctl.sh "$@" tls --zone "${ZONE}" --command copy
 
 echo
+echo "#################################################"
 echo "### Setting up tools for seat ${START}"
+echo "#################################################"
 if ! ./seatctl.sh "$@" run -- docker version >/dev/null 2>&1; then
     ./seatctl.sh "$@" run -- update-alternatives --set iptables /usr/sbin/iptables-legacy
     ./seatctl.sh "$@" run -- uniget update
@@ -84,7 +91,9 @@ if ! ./seatctl.sh "$@" run -- docker version >/dev/null 2>&1; then
 fi
 
 echo
+echo "#################################################"
 echo "### Setting up user and variables for seat ${START}"
+echo "#################################################"
 if ! ./seatctl.sh "$@" run -- grep -q seat /etc/passwd; then
     ./seatctl.sh "$@" user --command add
 fi
@@ -96,7 +105,9 @@ fi
 ./seatctl.sh "$@" dns --command var --zone "${ZONE}"
 
 echo
+echo "#################################################"
 echo "### Setting up repository for seat ${START}"
+echo "#################################################"
 if ! ./seatctl.sh "$@" run -- test -d container-slides; then
     ./seatctl.sh "$@" run -- git clone https://github.com/nicholasdille/container-slides
 else
@@ -105,13 +116,17 @@ fi
 
 if test -n "${DIR}"; then
     echo
+    echo "#################################################"
     echo "### Starting deployment for seat ${START}"
+    echo "#################################################"
     ./seatctl.sh "$@" run -- container-slides/${DIR}/bootstrap.sh
     exit 0
 fi
 
 echo
+echo "#################################################"
 echo "### Setting up user repository for seat ${START}"
+echo "#################################################"
 if ! ./seatctl.sh "$@" run -- test -d /home/seat/container-slides; then
     ./seatctl.sh "$@" run -- sudo -u seat git clone https://github.com/nicholasdille/container-slides /home/seat/container-slides
 else
