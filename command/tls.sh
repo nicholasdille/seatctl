@@ -5,7 +5,6 @@ function tls_main() {
     local command
     local server=letsencrypt
     local sleep=300
-    local force=false
 
     while test "$#" -gt 0; do
         case "$1" in
@@ -24,9 +23,6 @@ function tls_main() {
             --sleep)
                 shift
                 sleep=$1
-            ;;
-            --force)
-                force=true
             ;;
             --help)
                 tls_help
@@ -58,11 +54,6 @@ function tls_main() {
         exit 1
     fi
 
-    force_param=
-    if ${force}; then
-        force_param=--force
-    fi
-
     # shellcheck disable=SC2154
     for index in ${vm_list}; do
         # shellcheck disable=SC2154
@@ -70,28 +61,53 @@ function tls_main() {
 
         case "${command}" in
             get)
-                export HETZNER_Token="${HETZNER_DNS_API_TOKEN}"
-                "${HOME}/.acme.sh/acme.sh" --issue \
-                    --server "${server}" \
-                    --dns dns_hetzner \
-                    --domain "seat${index}.${zone}" \
-                    --domain "*.seat${index}.${zone}" \
-                    --domain "*.gitlab.seat${index}.${zone}" \
-                    --dnssleep "${sleep}" \
-                    --key-file       "${script_base_dir}/set/${name}/seat-${name}-${index}.key" \
-                    --cert-file      "${script_base_dir}/set/${name}/seat-${name}-${index}.crt" \
-                    --ca-file        "${script_base_dir}/set/${name}/seat-${name}-${index}.ca" \
-                    --fullchain-file "${script_base_dir}/set/${name}/seat-${name}-${index}.chain" \
-                    ${force_param}
+                HETZNER_API_TOKEN="$(
+                    cat ~/.config/hcloud/cli.toml \
+                    | grep -A 1 "name = \"dns\"" \
+                    | tail -n -1 \
+                    | tr -d ' ' \
+                    | cut -d= -f2 \
+                    | tr -d '"'
+                )"
+                export HETZNER_API_TOKEN
+                lego \
+                    --email=webmaster@${zone} \
+                    --dns=hetzner \
+                    --domains="seat${index}.${zone}" \
+                    --domains="*.seat${index}.${zone}" \
+                    --domains="*.gitlab.seat${index}.${zone}" \
+                    --accept-tos \
+                    run
+                cp ".lego/certificates/seat${index}.${zone}.key" "${script_base_dir}/set/${name}/seat-${name}-${index}.key"
+                cp ".lego/certificates/seat${index}.${zone}.issuer.crt" "${script_base_dir}/set/${name}/seat-${name}-${index}.ca"
+                cp ".lego/certificates/seat${index}.${zone}.crt" "${script_base_dir}/set/${name}/seat-${name}-${index}.chain"
+                cat "${script_base_dir}/set/${name}/seat-${name}-${index}.chain" \
+                | awk 'BEGIN { found = 0 } /-----BEGIN CERTIFICATE-----/ { found = 1 } found { print } /-----END CERTIFICATE-----/ { exit }' \
+                >"${script_base_dir}/set/${name}/seat-${name}-${index}.crt"
             ;;
             renew)
-                export HETZNER_Token="${HETZNER_DNS_API_TOKEN}"
-                "${HOME}/.acme.sh/acme.sh" --renew \
-                    --server "${server}" \
-                    --dns dns_hetzner \
-                    --domain "seat0.inmylab.de" \
-                    --dnssleep "${sleep}" \
-                    ${force_param}
+                HETZNER_API_TOKEN="$(
+                    cat ~/.config/hcloud/cli.toml \
+                    | grep -A 1 "name = \"dns\"" \
+                    | tail -n -1 \
+                    | tr -d ' ' \
+                    | cut -d= -f2 \
+                    | tr -d '"'
+                )"
+                export HETZNER_API_TOKEN
+                lego \
+                    --email=webmaster@${zone} \
+                    --dns=hetzner \
+                    --domains="seat${index}.${zone}" \
+                    --domains="*.seat${index}.${zone}" \
+                    --domains="*.gitlab.seat${index}.${zone}" \
+                    renew
+                cp ".lego/certificates/seat${index}.${zone}.key" "${script_base_dir}/set/${name}/seat-${name}-${index}.key"
+                cp ".lego/certificates/seat${index}.${zone}.issuer.crt" "${script_base_dir}/set/${name}/seat-${name}-${index}.ca"
+                cp ".lego/certificates/seat${index}.${zone}.crt" "${script_base_dir}/set/${name}/seat-${name}-${index}.chain"
+                cat "${script_base_dir}/set/${name}/seat-${name}-${index}.chain" \
+                | awk 'BEGIN { found = 0 } /-----BEGIN CERTIFICATE-----/ { found = 1 } found { print } /-----END CERTIFICATE-----/ { exit }' \
+                >"${script_base_dir}/set/${name}/seat-${name}-${index}.crt"
             ;;
             copy)
                 # shellcheck disable=SC2154
