@@ -1,14 +1,15 @@
 #!/bin/bash
 
-if test -z "${HCLOUD_CONTEXT}" && test -z "${HCLOUD_TOKEN}"; then
-    error "Provider hcloud requires either environment variable HCLOUD_CONTEXT or HCLOUD_TOKEN"
+if test -z "${HCLOUD_CONTEXT}" ; then
+    error "Provider hcloud requires environment variable HCLOUD_CONTEXT"
     exit 1
 fi
 export HCLOUD_CONTEXT
-export HCLOUD_TOKEN
 
-# shellcheck disable=SC2154
-HCLOUD="${script_base_dir}/bin/hcloud"
+if test -z "${HCLOUD_DNS_CONTEXT}" ; then
+    info "Assuming the same hcloud context for DNS"
+fi
+export HCLOUD_DNS_CONTEXT
 
 function exists_ssh_key() {
     local name=$1
@@ -18,7 +19,7 @@ function exists_ssh_key() {
         exit 1
     fi
 
-    test "$(${HCLOUD} ssh-key list --selector seatctl-set="${name}" --output noheader | wc -l)" -eq 0
+    test "$(hcloud --context "${HCLOUD_CONTEXT}" ssh-key list --selector seatctl-set="${name}" --output noheader | wc -l)" -eq 0
 }
 
 function check_ssh_key() {
@@ -30,7 +31,7 @@ function check_ssh_key() {
     fi
 
     local hcloud_ssh_fingerprint
-    hcloud_ssh_fingerprint=$(${HCLOUD} ssh-key list --selector seatctl-set="${name}" --output columns=fingerprint | tail -n 1)
+    hcloud_ssh_fingerprint=$(hcloud --context "${HCLOUD_CONTEXT}" ssh-key list --selector seatctl-set="${name}" --output columns=fingerprint | tail -n 1)
     local local_ssh_fingerprint
     local_ssh_fingerprint=$(ssh-keygen -l -E md5 -f "${script_base_dir}/set/${name}/ssh" | cut -d' ' -f2 | cut -d':' -f2-)
     
@@ -55,10 +56,10 @@ function create_ssh_key() {
     fi
 
     if exists_ssh_key "${name}"; then
-        ${HCLOUD} ssh-key create \
+        hcloud --context "${HCLOUD_CONTEXT}" ssh-key create \
             --name "seatctl-set-${name}" \
             --public-key-from-file "${ssh_key}"
-        ${HCLOUD} ssh-key add-label "seatctl-set-${name}" \
+        hcloud --context "${HCLOUD_CONTEXT}" ssh-key add-label "seatctl-set-${name}" \
             seatctl-set="${name}"
     fi
 
@@ -77,7 +78,7 @@ function remove_ssh_key() {
     fi
 
     if exists_ssh_key "${name}"; then
-        ${HCLOUD} ssh-key delete "seatctl-set-${name}"
+        hcloud --context "${HCLOUD_CONTEXT}" ssh-key delete "seatctl-set-${name}"
     fi
 }
 
@@ -94,7 +95,7 @@ function exists_virtual_machine() {
         exit 1
     fi
 
-    if test "$(${HCLOUD} server list --selector seatctl-set="${name}",seatctl-index="${index}" --output noheader | wc -l)" -gt 0; then
+    if test "$(hcloud --context "${HCLOUD_CONTEXT}" server list --selector seatctl-set="${name}",seatctl-index="${index}" --output noheader | wc -l)" -gt 0; then
         return 0
     fi
 
@@ -135,7 +136,7 @@ function create_virtual_machine() {
         debug "user_data_param=${user_data_param}."
 
         # shellcheck disable=SC2086
-        ${HCLOUD} server create \
+        hcloud --context "${HCLOUD_CONTEXT}" server create \
             --name "seat-${name}-${index}" \
             --location fsn1 \
             --type cx42 \
@@ -165,7 +166,7 @@ function get_virtual_machine_ip() {
 
     if exists_virtual_machine "${name}" "${index}"; then
         >&2 echo "Fetching IP address for index ${index} in set ${name}..."
-        ${HCLOUD} server list --selector seatctl-set="${name}",seatctl-index="${index}" --output columns=ipv4 | tail -n +2
+        hcloud --context "${HCLOUD_CONTEXT}" server list --selector seatctl-set="${name}",seatctl-index="${index}" --output columns=ipv4 | tail -n +2
     fi
 }
 
@@ -183,7 +184,7 @@ function remove_virtual_machine() {
     fi
 
     if exists_virtual_machine "${name}" "${index}"; then
-        ${HCLOUD} server delete "seat-${name}-${index}"
+        hcloud --context "${HCLOUD_CONTEXT}" server delete "seat-${name}-${index}"
     fi
 }
 
@@ -201,7 +202,7 @@ function start_virtual_machine() {
     fi
 
     if exists_virtual_machine "${name}" "${index}"; then
-        ${HCLOUD} server poweron "seat-${name}-${index}"
+        hcloud --context "${HCLOUD_CONTEXT}" server poweron "seat-${name}-${index}"
     fi
 }
 
@@ -219,7 +220,7 @@ function stop_virtual_machine() {
     fi
 
     if exists_virtual_machine "${name}" "${index}"; then
-        ${HCLOUD} server poweroff "seat-${name}-${index}"
+        hcloud --context "${HCLOUD_CONTEXT}" server poweroff "seat-${name}-${index}"
     fi
 }
 
@@ -237,7 +238,7 @@ function shutdown_virtual_machine() {
     fi
 
     if exists_virtual_machine "${name}" "${index}"; then
-        ${HCLOUD} server shutdown "seat-${name}-${index}"
+        hcloud --context "${HCLOUD_CONTEXT}" server shutdown "seat-${name}-${index}"
     fi
 }
 
@@ -255,7 +256,7 @@ function restart_virtual_machine() {
     fi
 
     if exists_virtual_machine "${name}" "${index}"; then
-        ${HCLOUD} server reboot "seat-${name}-${index}"
+        hcloud --context "${HCLOUD_CONTEXT}" server reboot "seat-${name}-${index}"
     fi
 }
 
@@ -274,6 +275,98 @@ function change_type_virtual_machine() {
     fi
 
     if exists_virtual_machine "${name}" "${index}"; then
-        ${HCLOUD} server change-type "seat-${name}-${index}" "${type}"
+        hcloud --context "${HCLOUD_CONTEXT}" server change-type "seat-${name}-${index}" "${type}"
     fi
+}
+
+function exists_dns_record() {
+    local zone=$1
+    if test -z "${zone}"; then
+        error "Zone must be specified"
+        exit 1
+    fi
+    local name=$2
+    if test -z "${name}"; then
+        error "Name must be specified"
+        exit 1
+    fi
+    local type=$3
+    if test -z "${type}"; then
+        error "Type must be specified"
+        exit 1
+    fi
+
+    verbose "Checking for DNS record ${name}.${zone} of type ${type}."
+    if hcloud --context "${HCLOUD_DNS_CONTEXT}" zone rrset describe "${zone}" "${name}" "${type}" >/dev/null 2>&1; then
+        verbose "Record ${name}.${zone} of type ${type} does not exist"
+        return 1
+    else
+        verbose "Record ${name}.${zone} of type ${type} exists"
+        return 0
+    fi
+}
+
+function create_dns_record() {
+    local zone=$1
+    if test -z "${zone}"; then
+        error "Zone must be specified"
+        exit 1
+    fi
+    local name=$2
+    if test -z "${name}"; then
+        error "Name must be specified"
+        exit 1
+    fi
+    local type=$3
+    if test -z "${type}"; then
+        error "Type must be specified"
+        exit 1
+    fi
+    local content=$4
+    if test -z "${content}"; then
+        error "Content must be specified"
+        exit 1
+    fi
+
+    hcloud --context "${HCLOUD_DNS_CONTEXT}" zone add-records "${zone}" "${name}" "${type}" --record="${content}"
+}
+
+function remove_dns_record() {
+    local zone=$1
+    if test -z "${zone}"; then
+        error "Zone must be specified"
+        exit 1
+    fi
+    local name=$2
+    if test -z "${name}"; then
+        error "Name must be specified"
+        exit 1
+    fi
+    local type=$3
+    if test -z "${type}"; then
+        error "Type must be specified"
+        exit 1
+    fi
+
+    hcloud --context "${HCLOUD_DNS_CONTEXT}" zone rrset delete "${zone}" "${name}" "${type}"
+}
+
+function get_dns_record() {
+    local zone=$1
+    if test -z "${zone}"; then
+        error "Zone must be specified"
+        exit 1
+    fi
+    local name=$2
+    if test -z "${name}"; then
+        error "Name must be specified"
+        exit 1
+    fi
+    local type=$3
+    if test -z "${type}"; then
+        error "Type must be specified"
+        exit 1
+    fi
+
+    hcloud --context "${HCLOUD_DNS_CONTEXT}" zone rrset describe "${zone}" "${name}" "${type}" --output=json | jq -r '"\(.name) \(.type) \(.records[].value)"'
 }

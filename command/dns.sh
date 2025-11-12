@@ -72,13 +72,13 @@ function dns_main() {
             remove)
                 if exists_dns_record "${zone}" "seat${index}" A; then
                     info "Removing DNS record for seat${index}.${zone}..."
-                    remove_dns_record "${zone}" "seat${index}"
+                    remove_dns_record "${zone}" "seat${index}" A
                 else
                     info "DNS record for seat${index}.${zone} does not exist"
                 fi
                 if exists_dns_record "${zone}" "*.seat${index}" CNAME; then
                     info "Removing DNS record for *.seat${index}.${zone}..."
-                    remove_dns_record "${zone}" "*.seat${index}"
+                    remove_dns_record "${zone}" "*.seat${index}" CNAME
                 else
                     info "DNS record for *.seat${index}.${zone} does not exist"
                 fi
@@ -86,8 +86,8 @@ function dns_main() {
             show)
                 (
                     echo "Name Type Content"
-                    get_dns_record "${zone}" "seat${index}"
-                    get_dns_record "${zone}" "*.seat${index}"
+                    get_dns_record "${zone}" "seat${index}" A
+                    get_dns_record "${zone}" "*.seat${index}" CNAME
                 ) | column -t
             ;;
             var)
