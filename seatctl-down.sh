@@ -10,7 +10,7 @@ if test -z "${NAME}" || test -z "${COUNT}" || test -z "${ZONE}"; then
     exit 1
 fi
 
-set -- --provider hcloud,hetzner_dns --name "${NAME}" --start 0 --count "${COUNT}"
+set -- --provider hcloud --name "${NAME}" --start 0 --count "${COUNT}"
 
 ./seatctl.sh "$@" dns --command remove --zone "${ZONE}"
 ./seatctl.sh "$@" remove

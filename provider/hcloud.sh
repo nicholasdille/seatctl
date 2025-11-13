@@ -297,7 +297,7 @@ function exists_dns_record() {
     fi
 
     verbose "Checking for DNS record ${name}.${zone} of type ${type}."
-    if hcloud --context "${HCLOUD_DNS_CONTEXT}" zone rrset describe "${zone}" "${name}" "${type}" >/dev/null 2>&1; then
+    if ! hcloud --context "${HCLOUD_DNS_CONTEXT}" zone rrset describe "${zone}" "${name}" "${type}" >/dev/null 2>&1; then
         verbose "Record ${name}.${zone} of type ${type} does not exist"
         return 1
     else

@@ -13,7 +13,7 @@ if test -z "${NAME}" || test -z "${START}" || test -z "${COUNT}" || test -z "${Z
 fi
 
 if test "${COUNT}" -gt 1; then
-    ./seatctl.sh --provider hcloud,hetzner_dns --name "${NAME}" --start "${START}" --count "${COUNT}" bootstrap
+    ./seatctl.sh --provider hcloud --name "${NAME}" --start "${START}" --count "${COUNT}" bootstrap
 
     declare -a pids
     for INDEX in $(seq 1 ${COUNT}); do
@@ -41,7 +41,7 @@ if test "${COUNT}" -gt 1; then
     exit
 fi
 
-set -- --provider hcloud,hetzner_dns --name "${NAME}" --start "${START}" --count "${COUNT}"
+set -- --provider hcloud --name "${NAME}" --start "${START}" --count "${COUNT}"
 
 if test -n "${DIR}"; then
     echo

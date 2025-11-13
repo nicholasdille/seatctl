@@ -14,7 +14,7 @@ if test -z "${NAME}" || test -z "${START}" || test -z "${COUNT}" || test -z "${Z
 fi
 
 if test "${COUNT}" -gt 1; then
-    ./seatctl.sh --provider hcloud,hetzner_dns --name "${NAME}" --start "${START}" --count "${COUNT}" bootstrap
+    ./seatctl.sh --provider hcloud --name "${NAME}" --start "${START}" --count "${COUNT}" bootstrap
 
     for INDEX in $(seq 1 ${COUNT}); do
         $0 $1 $((START+INDEX-1)) 1 $4 $5 $6
@@ -23,7 +23,7 @@ if test "${COUNT}" -gt 1; then
     exit
 fi
 
-set -- --provider hcloud,hetzner_dns --name "${NAME}" --start "${START}" --count "${COUNT}"
+set -- --provider hcloud --name "${NAME}" --start "${START}" --count "${COUNT}"
 
 echo
 echo "### Setting up repository for seat ${START}"

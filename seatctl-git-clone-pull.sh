@@ -4,11 +4,9 @@ set -o errexit
 NAME=$1
 START=$2
 COUNT=$3
-ZONE=$4
-DIR=$5
 
-if test -z "${NAME}" || test -z "${START}" || test -z "${COUNT}" || test -z "${ZONE}"; then
-    echo "Usage: $0 <name> <start> <count> <zone> [<dir>]"
+if test -z "${NAME}" || test -z "${START}" || test -z "${COUNT}"; then
+    echo "Usage: $0 <name> <start> <count>"
     exit 1
 fi
 
@@ -44,15 +42,22 @@ fi
 set -- --provider hcloud --name "${NAME}" --start "${START}" --count "${COUNT}"
 
 echo
-echo "### Setting up repository for seat ${START}"
+echo "#################################################"
+echo "### Setting up root repository for seat ${START}"
+echo "#################################################"
 if ! ./seatctl.sh "$@" run -- test -d container-slides; then
     ./seatctl.sh "$@" run -- git clone https://github.com/nicholasdille/container-slides
 else
     ./seatctl.sh "$@" run -- "cd container-slides && git reset --hard && git pull"
 fi
 
-if test -n "${DIR}"; then
-    echo
-    echo "### Starting deployment for seat ${START}"
-    ./seatctl.sh "$@" run -- container-slides/${DIR}/restart.sh
+echo
+echo "#################################################"
+echo "### Setting up user repository for seat ${START}"
+echo "#################################################"
+if ! ./seatctl.sh "$@" run -- test -d /home/seat/container-slides; then
+    ./seatctl.sh "$@" run -- sudo -u seat git clone https://github.com/nicholasdille/container-slides /home/seat/container-slides
+else
+    ./seatctl.sh "$@" run -- sudo -u seat git -C /home/seat/container-slides reset --hard
+    ./seatctl.sh "$@" run -- sudo -u seat git -C /home/seat/container-slides pull
 fi
