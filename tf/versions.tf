@@ -24,7 +24,7 @@ terraform {
     }
     gitlab = {
       source = "gitlabhq/gitlab"
-      version = "18.5.0"
+      version = "19.3.0"
     }
     null = {
       source = "hashicorp/null"
